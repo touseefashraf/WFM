@@ -1,0 +1,12 @@
+.tut-pro-photo {
+    
+    text-align: center;
+    
+}
+.tut-pro-photo img {
+    max-width: 150px;
+    max-height: 150px;
+    margin-top: 30px;
+}
+
+

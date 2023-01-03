@@ -1,0 +1,224 @@
+<!-- <div style="background-color: gainsboro;"> -->
+<!-- End Navbar -->
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="wfc card card-stats">
+                    <div class="card-header card-header-warning card-header-icon">
+                        <div class="card-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <p class="card-category">Total Income</p>
+                        <h3 class="card-title">
+                            {{ totalIncome }}
+                            <small>PKR</small>
+                        </h3>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <i class="fas fa-dollar-sign"></i>
+                            <a routerLink="/admin/income"> View Incomes</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="wfc card card-stats">
+                    <div class="card-header card-header-success card-header-icon">
+                        <div class="card-icon">
+                            <i class="fas fa-money-bill-alt"></i>
+                        </div>
+                        <p class="card-category">Total Expense</p>
+                        <h3 class="card-title">
+                            {{ totalExpense }}
+                            <small>PKR</small>
+                        </h3>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <i class="fas fa-money-bill-alt"></i>
+                            <a routerLink="/admin/expense"> View Expenses</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="wfc card card-stats">
+                    <div class="card-header card-header-danger card-header-icon">
+                        <div class="card-icon">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                        <p class="card-category">Total Salaries Paied</p>
+                        <h3 class="card-title">{{totalSalariesPaid > 0? totalSalariesPaid: "0"}}<small> PKR</small>
+                        </h3>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <i class="fas fa-receipt"></i>
+                            <a routerLink="admin/employee-salary-log"> View previous Salaries</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="wfc card card-stats">
+                    <div class="card-header card-header-info card-header-icon">
+                        <div class="card-icon">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                        <p class="card-category">Total Arrears</p>
+                        <h3 class="card-title">
+                            {{totalArrears?totalArrears: "0"}}
+                            <small>PKR</small>
+                        </h3>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <i class="fas fa-receipt"></i> Just
+                            Updated
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="charts card card-chart">
+                    <div class="card-header card-header-success">
+                        <div class="ct-chart" id="dailySalesChart">
+                            <div style="display: block" *ngIf="dataStatus">
+                                <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions" [plugins]="barChartPlugins" [legend]="barChartLegend" [chartType]="barChartType">
+                                </canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="col-md-12 mt-2">
+                            <h4 class="card-title">Daily Sales</h4>
+                            <p class="card-category">
+                                <span class="text-success"><i class="fa fa-long-arrow-up"></i> 55%
+                                </span>
+                                increase in today sales.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <i class="fas fa-clock" aria-hidden="true"></i>
+                            updated 4 minutes ago
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="charts card card-chart">
+                    <div class="card-header card-header-warning">
+                        <div class="ct-chart" id="websiteViewsChart">
+                            <div style="display: block" *ngIf="dataStatus">
+                                <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions" [plugins]="barChartPlugins" [legend]="barChartLegend" [chartType]="barChartType">
+                                </canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="col-md-12 mt-2">
+                            <h4 class="card-title">Email Subscriptions</h4>
+                            <p class="card-category">Last Campaign Performance</p>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <i class="fas fa-clock" aria-hidden="true"></i>
+                            campaign sent 2 days ago
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="charts card card-chart">
+                    <div class="card-header card-header-danger">
+                        <div class="ct-chart" id="completedTasksChart">
+                            <div style="display: block" *ngIf="dataStatus">
+                                <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions" [plugins]="barChartPlugins" [legend]="barChartLegend" [chartType]="barChartType">
+                                </canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="col-md-12 mt-2">
+                            <h4 class="card-title">Completed Tasks</h4>
+                            <p class="card-category">Last Campaign Performance</p>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <i class="fas fa-clock" aria-hidden="true"></i>
+                            campaign sent 2 days ago
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-warning">
+                        <h4 class="card-title">Recent Income Entries</h4>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table class="table table-hover">
+                            <thead class="text-warning">
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Project</th>
+                                <th>Dated</th>
+                                <th>Amount</th>
+                            </thead>
+                            <tbody *ngIf="recentIncomes.length> 0 && dataVaStatus === true">
+                                <tr *ngFor="let entry of recentIncomes;
+                                    let i= index">
+                                    <td>{{ entry.title }}</td>
+                                    <td>{{ entry.income_category.title }}</td>
+                                    <td>{{ entry.project.title }}</td>
+                                    <td>{{moment(entry.created_at).format("YYYY-MM-DD")}}</td>
+                                    <td>{{entry.amount}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-warning">
+                        <h4 class="card-title">Recent Expense Entries</h4>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table class="table table-hover">
+                            <thead class="text-warning">
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Dated</th>
+                                <th>Amount</th>
+                            </thead>
+                            <tbody *ngIf="recentExpense.length> 0 && dataVaStatus === true">
+                                <tr *ngFor="let entry of recentExpense;
+                                    let i= index">
+                                    <td>{{ entry.title }}</td>
+                                    <td>{{ (entry.expense_category)?entry.expense_category.title:''}}</td>
+                                    <td>{{moment(entry.created_at).format("YYYY-MM-DD")}}</td>
+                                    <td>{{entry.amount}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- </div> -->

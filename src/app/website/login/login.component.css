@@ -1,0 +1,72 @@
+.signin-container {
+    min-height: 100vh;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fafafa;
+}
+.box-container {
+    background: #fff;
+    padding: 60px 0px;
+    border-radius: 10px;
+    text-align: center;
+    display: flex;
+}
+.left-box {
+    padding: 0px 48px;
+}
+.right-box {
+    padding: 0px 48px;
+}
+.title {
+    margin-bottom: 24px;
+}
+input, button.login {
+    padding: 10px 55px;
+    background: #E0E0DB;
+    border: none;
+    border-radius: 21px;
+    width: 300px;
+}
+button.login {
+    background: #31708f;
+}
+.errors p {
+    margin-left: 20px;
+}
+input:focus {
+    background-color: #eee;
+    outline: none;
+    box-shadow: none;
+}
+.input-container{
+    margin-bottom: 15px;
+    display: block;
+}
+
+.footer-container a {
+    color: #31708f;
+    margin-top: 10px;
+}
+
+.email-wrapper, .password-wrapper {
+    position: relative;
+}
+.email-wrapper::before, .password-wrapper::before {
+    font-family: "Font Awesome 5 Free";
+    position: absolute;
+    font-weight: 900;
+    color: #555;
+}
+.email-wrapper::before {
+    content: "\f0e0";
+    left: 25px;
+    top: calc(50% - 1px);
+    transform: translateY(-50%);
+}
+.password-wrapper::before {
+    content: "\f023";
+    left: 25px;
+    top: 8px;
+}

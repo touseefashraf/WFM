@@ -1,0 +1,97 @@
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-1">
+        <div class="d-flex justify-content-end">
+            <button *ngIf="api.checkPermission('add-bank')" class="green sm mb-2" (click)="openModalBank(bankTemplete,-1)">Add Bank</button>
+
+        </div>
+        <div class="card">
+            <h4 class="card-header">Banks</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Full Name</th>
+                                <th>Short Name</th>
+                                <th *ngIf="api.checkPermissions(['update-bank','delete-bank'])" width="245px" class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="bankList.length > 0 && dataStatus">
+                            <tr *ngFor="let d of bankList; let i = index">
+                                <td>{{d.full_name}} </td>
+                                <td>{{d.short_name}} </td>
+                                <td>
+                                    <div class="d-flex justify-content-center">
+                                        <!-- <button type="button" class="sm green" (click)="openModalBank(bankTemplete,i)">Edit</button>
+                                        <button type="button" class="sm red" (click)="confirmingModal(bankConfirming, d.id,i)">Delete</button> -->
+                                        <div *ngIf="api.checkPermission('update-bank')" class="px-2">
+                                            <i (click)="openModalBank(bankTemplete,i)" style="margin-top: 0px;" class="fa fa-edit"></i>
+                                        </div>
+                                        <div *ngIf="api.checkPermission('delete-bank')" class="px-2">
+                                            <i (click)="confirmingModal(bankConfirming, d.id,i)" style="margin-top: 0px;" class="fa fa-trash"></i>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody *ngIf="bankList.length == 0 && dataStatus">
+                            <tr>
+                                <td colspan="3">
+                                    <app-no-data-found></app-no-data-found>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <!-- <tbody *ngIf="!dataStatus">
+                            <tr>
+                                <td colspan="3">
+                                    <p>Loader</p>
+                                </td>
+                            </tr>
+                        </tbody> -->
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ng-template #bankTemplete>
+        <div class="modal-header">
+            <h4 class="modal-title pull-left">Add Bank</h4>
+        </div>
+        <div class="modal-body">
+            <form [formGroup]="bankForm" (ngSubmit)="saveBank(bankForm, f)" #f="ngForm">
+                <div class="row">
+                    <div class="col-md-6 mb-1">
+                        <label class="mb-0">Full Name</label>
+                        <input formControlName="full_name" class="form-control mt-0" placeholder="Enter Full Name" [ngClass]="{'form-submitted': f.submitted}">
+                        <div *ngIf="ui.checkErrors(g.full_name, f)" class="errors">
+                            <p *ngIf="g.full_name.errors.required">Full name is required</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-1">
+                        <label class="mb-0">Short Name</label>
+                        <input formControlName="short_name" class="form-control mt-0" placeholder="Enter Short Name" [ngClass]="{'form-submitted': f.submitted}">
+                        <div *ngIf="ui.checkErrors(g.short_name, f)" class="errors">
+                            <p *ngIf="g.short_name.errors.required">Short name is required</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="red sm m-1" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Save
+                    <span></span><span></span><span></span>
+                </button>
+                <button type="button" class="black sm ml-1" (click)="cancelBankButton(f)">Cancel</button>
+
+            </form>
+        </div>
+    </ng-template>
+
+    <ng-template #bankConfirming>
+        <div class="modal-body text-center">
+            <p>Do you want to Delete?</p>
+            <button type="button" class="black sm ml-1" (click)="modalRef.hide()">No</button>
+            <button type="button" class="green sm m-1" (click)="deleteBank()" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Yes
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </ng-template>

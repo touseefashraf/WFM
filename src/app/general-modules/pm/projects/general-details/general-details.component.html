@@ -1,0 +1,117 @@
+<app-steps [step]="'general-details'"></app-steps>
+<div class="container-fluid justify-content-center mt-3">
+    <div class="">
+        <h4 class="font-bold mb-3">Add Project</h4>
+        <form [formGroup]="projectForm" (ngSubmit)="save(projectForm)" #f="ngForm">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Title <span class="mendatory">*</span></label>
+                                <input formControlName="title" class="form-control" placeholder="Enter Project Title" [ngClass]="{'form-submitted': f.submitted}">
+                                <div *ngIf="ui.checkErrors(g.title , f)" class="errors">
+                                    <p *ngIf="g.title.errors.required">Title is required</p>
+                                    <p *ngIf="g.title.errors.maxlength">Title should not exceeds from 300 characters}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Client <span class="mendatory">*</span></label>
+                                <select formControlName="client_id" class="fadeIn" [ngClass]="{'form-submitted': f.submitted}">
+                                    <option disabled [value]="null">Select Client</option>
+                                    <option *ngFor="let c of clients" [value]="c.id">{{c.first_name}}</option>
+                                </select>
+                                <div *ngIf="ui.checkErrors(g.client_id , f)" class="errors">
+                                    <p *ngIf="g.client_id.errors.required">Client is required</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Status <span class="mendatory">*</span></label>
+                                <select formControlName="status" class="fadeIn" class="form-control" [ngClass]="{'form-submitted': f.submitted}">
+                                    <option disabled [value]="null">Select Status</option>
+                                    <option value="in_progress">In Progress</option>
+                                    <option value="support">Support</option>
+                                    <option value="closed">Closed</option>
+                                </select>
+                                <div *ngIf="ui.checkErrors(g.status , f)" class="errors">
+                                    <p *ngIf="g.status.errors.required">Status is required</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label>Repository Link <span class="mendatory">*</span></label>
+                            <input type="text" class="form-control" formControlName="repo_link" placeholder="Enter Repository Link" [ngClass]="{'form-submitted': f.submitted}" />
+                            <div *ngIf="ui.checkErrors(g.repo_link, f)" class="errors">
+                                <p *ngIf="g.repo_link.errors.required">Repository Link is required</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label>Start Date <span class="mendatory">*</span></label>
+                            <input type="text" class="form-control" bsDatepicker [bsConfig]="{ dateInputFormat: 'MMMM Do YYYY',adaptivePosition: true }" formControlName="start_date" placeholder="Enter Start Date" [ngClass]="{'form-submitted': f.submitted}" />
+                            <div *ngIf="ui.checkErrors(g.start_date, f)" class="errors">
+                                <p *ngIf="g.start_date.errors.required">Start date is required</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label>Deadline <span class="mendatory">*</span></label>
+                            <input type="text" class="form-control" bsDatepicker [bsConfig]="{ dateInputFormat: 'MMMM Do YYYY',adaptivePosition: true }" formControlName="deadline" placeholder="Enter Deadline Date" [ngClass]="{'form-submitted': f.submitted}" />
+                            <div *ngIf="ui.checkErrors(g.deadline, f)" class="errors">
+                                <p *ngIf="g.deadline.errors.required">Deadline date is required</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Fee Percentage <span class="mendatory">*</span></label>
+                                <input formControlName="fee_percentage" type="number" step="0.1" class="form-control" placeholder="Enter Currency" [ngClass]="{'form-submitted': f.submitted}">
+                                <div *ngIf="ui.checkErrors(g.fee_percentage , f)" class="errors">
+                                    <p *ngIf="g.fee_percentage.errors.required">Fee Percentage is required</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Currency <span class="mendatory">*</span></label>
+                                <select formControlName="currency_id" class="fadeIn" [ngClass]="{'form-submitted': f.submitted}">
+                                    <option disabled [value]="null">Select Currency</option>
+                                    <option *ngFor="let c of currency" [value]="c.id">{{c.short_name}}</option>
+                                </select>
+                                <div *ngIf="ui.checkErrors(g.currency_id , f)" class="errors">
+                                    <p *ngIf="g.currency_id.errors.required">Currency is required</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Recruiter Project<span class="mendatory">*</span></label>
+                                <select formControlName="recruiter" class="fadeIn" class="form-control" [ngClass]="{'form-submitted': f.submitted}">
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                                <div *ngIf="ui.checkErrors(g.fee_percentage , f)" class="errors">
+                                    <p *ngIf="g.fee_percentage.errors.required">Recruiter is required</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Description <span class="mendatory">*</span></label>
+                                <textarea rows="5" formControlName="description" class="form-control" [ngClass]="{'form-submitted': f.submitted}" placeholder="Enter Description"></textarea>
+                                <div *ngIf="ui.checkErrors(g.description, f)" class="errors">
+                                    <p *ngIf="g.description.errors.maxlength">Short name should be 1000 Characters</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="red sm mb-2" [routerLink]="['/admin/projects/projects-list']" routerLinkActive="router-link-active">Cancel</button>
+            <button type="submit" class="blue sm mb-2" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Save & Next
+                <span></span><span></span><span></span>
+            </button>
+        </form>
+    </div>
+</div>

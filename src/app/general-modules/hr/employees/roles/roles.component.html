@@ -1,0 +1,24 @@
+<app-steps-template [step]="'roles'"></app-steps-template>
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-1">
+        <div class="button-box">
+            <button type="button" class="red" [routerLink]="['/admin/employees/list']" routerLinkActive="router-link-active">Goto List</button>
+            <button class="blue" [routerLink]="['/admin/employees/permissions']" [queryParams]="{id:employeeId}">back</button>
+            <button class="green" (click)="assignRoles()" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Save
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+        <ng-container *ngIf="dataStatus">
+            <div class="row">
+                <div class="col-md-3" *ngFor="let d of rolesList; let i = index">
+                    <input [checked]="checkIfRoleExist(d)" type="checkbox" [name]="d.id" [id]="d.id" (change)="addRemoveIds(d.id)">
+                    <label [for]="d.id">{{d.name}}</label>
+                </div>
+            </div>
+
+        </ng-container>
+        <div class="details-container" *ngIf="!dataStatus">
+            <img src="/assets/img/loading.gif" style="width: 70px; margin-top: 5%;">
+        </div>
+    </div>
+</div>

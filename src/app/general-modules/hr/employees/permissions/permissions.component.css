@@ -1,0 +1,61 @@
+.details-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.permissions-container {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0px;
+}
+.permissions-list-box {
+    border: 1px solid #555555;
+    border-radius: 5px;
+    padding: 4px;
+    width: 47%;
+    max-height: calc(100vh - 270px);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.permissions-items {
+    background: #eee;
+    padding: 5px 10px;
+    border-radius: 4px;
+    color: black;
+    margin: 5px;
+    cursor: pointer;
+}
+.btn-custom{
+    display: flex;
+    align-items: flex-end;
+}
+.transparent-label{
+    /* color: transparent; */
+}
+.permissions-items:hover {
+    background-color: #bbbbbb;
+}
+.heading-permissions {
+    margin: 15px;
+    color: black;
+    font-weight: bold;
+    font-size: 20px;
+}
+.arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.arrow i {
+    font-size: 44px;
+    color: grey;
+}
+.button-box{
+    display: flex;
+    justify-content: flex-end;
+    margin-left: 350px;
+}

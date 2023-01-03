@@ -1,0 +1,176 @@
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-2">
+        <div class="row mb-3">
+            <div class="col-md-5">
+                <div class="form-group m-0">
+                    <label>Date</label>
+                    <input class="form-control" type="text" bsDaterangepicker [bsConfig]="{ rangeInputFormat : 'MMMM Do YYYY', dateInputFormat: 'MMMM Do YYYY',adaptivePosition: true ,isAnimated: true}" [(ngModel)]="date">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label>Select Employee Type</label>
+                <select class="fadeIn" [(ngModel)]="filters.designationId">
+                    <option disabled [value]="null">Select Employee Type</option>
+                    <option *ngFor="let dl of designationList" [value]="dl.id">{{dl.title}}
+                </select>
+            </div>
+            <div class="col col d-flex align-items-end">
+                <label>&nbsp;</label>
+                <div class="btn-group">
+                    <button [disabled]="loginLoading" class="green" [ngClass]="loginLoading?'in-progress':''" (click)="search()">Search
+                        <span></span><span></span><span></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <h4 class="card-header">Leaves</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Duration</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="dataStatus == 'done'">
+                            <tr *ngFor="let a of leavesList; let i = index">
+                                <ng-container *ngIf="a.data">
+                                    <td *ngIf="a.employee == null">Null</td>
+                                    <td *ngIf="a.employee != null">{{a.data.employee.user.first_name+ ' '+a.data.employee.user.last_name | titlecase}}</td>
+                                    <td>{{a.start_date |  date:'longDate' }} </td>
+                                    <td>{{a.end_date |  date:'longDate' }} </td>
+                                    <td>{{a.leave_days}} </td>
+                                    <td><button type="button" class="sm green" (click)="openModal(view,a)">Detail</button></td>
+                                </ng-container>
+                                <ng-container *ngIf="!a.data">
+                                    <td *ngIf="a.employee == null">Null</td>
+                                    <td *ngIf="a.employee != null">{{a.employee.user.first_name+ ' '+a.employee.user.last_name | titlecase}}</td>
+                                    <td>{{a.start_date |  date:'longDate' }} </td>
+                                    <td>{{a.end_date |  date:'longDate' }} </td>
+                                    <td>{{a.leave_days}} </td>
+                                    <td>
+                                        <button type="button" class="sm green" (click)="openModal(view,a)">Detail</button>
+                                    </td>
+                                </ng-container>
+                            </tr>
+                        </tbody>
+                        <ng-container *ngIf="dataStatus == 'fetching' && searched">
+                            <tbody [appSkeletonTabelLoader]="loaderOptions"></tbody>
+                        </ng-container>
+                        <tbody *ngIf="leavesList.length == 0 && dataStatus == 'done'">
+                            <tr>
+                                <td colspan="5">
+                                    <app-no-data-found></app-no-data-found>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody *ngIf="!searched">
+                            <tr>
+                                <td colspan="5">
+                                    <div class="no-data-wrapper">
+                                        <h2>Please Select fields and click serach to get list.</h2>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <nav *ngIf="dataStatus == 'done'">
+                        <ul class="pagination justify-content-left  mt-3">
+                            <li class="page-item">
+                                <small *ngIf="filters.page<10">Current Page: 0{{filters.page}}</small>
+                                <small *ngIf="filters.page>=10">Current Page: {{filters.page}}</small>
+                            </li>
+                        </ul>
+                        <ul class="pagination justify-content-left">
+                            <li class="page-item" *ngIf="pagination.prev_page_url != null">
+                                <a class="page-link" href="javascript: void(0)" tabindex="-1" (click)="setPagination(filters.page-1)">Previous</a>
+                            </li>
+                            <li class="page-item disabled" *ngIf="pagination.prev_page_url == null">
+                                <a class="page-link" href="javascript: void(0)" tabindex="-1">Previous</a>
+                            </li>
+                            <ng-container *ngIf="pagination.last_page <= 6">
+                                <ng-container *ngFor="let p of [].constructor(pagination.last_page); let i=index">
+                                    <li [class]="filters.page==(i+1) ? 'page-item active' : 'page-item'">
+                                        <a class="page-link" href="javascript: void(0)" (click)="setPagination(i+1)">{{i+1}}</a>
+                                    </li>
+                                </ng-container>
+                            </ng-container>
+                            <ng-container *ngIf="pagination.last_page >= 7">
+                                <ng-container *ngFor="let p of [].constructor(pagination.last_page); let i=index">
+                                    <li *ngIf="i<4" [class]="filters.page==(i+1) ? 'page-item active' : 'page-item'">
+                                        <a class="page-link" href="javascript: void(0)" (click)="setPagination(i+1)">{{i+1}}</a>
+                                    </li>
+                                    <li *ngIf="(pagination.last_page-i) == 3" [class]="filters.page==(i+1) ? 'page-item active' : 'page-item'">
+                                        <a class="page-link">...</a>
+                                    </li>
+                                    <li *ngIf="(pagination.last_page-i)==1 || (pagination.last_page-i)==2" [class]="filters.page==(i+1) ? 'page-item active' : 'page-item'">
+                                        <a class="page-link" href="javascript: void(0)" (click)="setPagination(i+1)">{{i+1}}</a>
+                                    </li>
+                                </ng-container>
+                            </ng-container>
+                            <li class="page-item" *ngIf="pagination.next_page_url != null">
+                                <a class="page-link" href="javascript: void(0)" tabindex="-1" (click)="setPagination(+filters.page+1)">Next</a>
+                            </li>
+                            <li class="page-item disabled" *ngIf="pagination.next_page_url == null">
+                                <a class="page-link" href="javascript: void(0)" tabindex="-1">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #view>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Leave Detail</h4>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-striped">
+                            <tbody>
+                                <tr>
+                                    <td><b>Name</b></td>
+                                    <td>{{leaveDetail.employee.title}}. {{leaveDetail.employee.user.first_name}} {{leaveDetail.employee.user.last_name}}</td>
+                                    <td><b>Designation</b></td>
+                                    <td>{{leaveDetail.employee.designation.title}}</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Paid</b></td>
+                                    <td>
+                                        <ng-container *ngIf="leaveDetail.paid==0">
+                                            No
+                                        </ng-container>
+                                        <ng-container *ngIf="leaveDetail.paid==1">
+                                            Yes
+                                        </ng-container>
+                                    </td>
+                                    <td><b>Leave Days</b></td>
+                                    <td>{{leaveDetail.leave_days}}</td>
+                                </tr>
+                                <tr>
+                                    <td><b>To</b></td>
+                                    <td>{{leaveDetail.start_date |  date:'longDate' }}</td>
+                                    <td><b>From</b></td>
+                                    <td>{{leaveDetail.end_date |  date:'longDate' }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" *ngIf="leaveDetail.leave_description">{{leave.detail.leave_description}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="button" class="red sm ml-1" (click)="cancelButton(f)">Cancel</button>
+    </div>
+</ng-template>

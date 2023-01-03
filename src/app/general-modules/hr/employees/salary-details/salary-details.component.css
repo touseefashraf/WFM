@@ -1,0 +1,11 @@
+.details-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.button-box{
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -20px;
+    margin-bottom: 20px;
+}

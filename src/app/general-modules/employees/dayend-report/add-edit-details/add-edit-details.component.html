@@ -1,0 +1,103 @@
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-1">
+        <div class="d-flex justify-content-between">
+            <h4 *ngIf="dataToSend.dayend_report_id !== null">Edit Report</h4>
+            <h4 *ngIf="dataToSend.dayend_report_id == null">Add Report</h4>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>Summary</label>
+                    <!-- <input class="form-control" type="text" [(ngModel)]="dataToSend.work_summary"> -->
+                    <!-- <quill-editor [(ngModel)]="dataToSend.work_summary"></quill-editor> -->
+                    <angular-editor [config]="editorConfig" [(ngModel)]="dataToSend.work_summary"></angular-editor>
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input class="form-control" type="text" *ngIf="dataToSend.dayend_report_id !== null" disabled [(ngModel)]="dataToSend.date">
+                    <input class="form-control" type="text" *ngIf="dataToSend.dayend_report_id == null" bsDatepicker [bsConfig]="{ dateInputFormat: 'MMMM Do YYYY',adaptivePosition: true }" [(ngModel)]="dataToSend.date">
+                </div>
+            </div>
+            <div class="col-md-6 d-flex align-items-center">
+                <button class="blue" (click)="addReportRow()">Add Report Detail</button>
+                <button class="green" *ngIf="dataToSend.dayend_report_id == null" (click)="save()" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Save
+                    <span></span><span></span><span></span>
+                </button>
+                <button class="green" *ngIf="dataToSend.dayend_report_id !== null" (click)="save()" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Update
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-sm table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Project</th>
+                        <!-- <th>Task Title</th> -->
+                        <th>Summary</th>
+                        <th>Task Ref.</th>
+                        <th>Github Link</th>
+                        <th>Hours</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody *ngIf="dataToSend.dayend_report_detail.length > 0">
+                    <tr *ngFor="let d of dataToSend.dayend_report_detail; let i = index">
+                        <td>{{i+1}}</td>
+                        <td>
+                            <div class="form-group m-0">
+                                <select [(ngModel)]="d.project_id">
+                                    <option [value]="null">Select Project</option>
+                                    <option *ngFor="let project of projectList" [value]="project.id">{{project.title}}</option>
+                                </select>
+                            </div>
+                        </td>
+                        <!-- <td>
+                            <div class="form-group m-0">
+                                <input class="form-control" type="text" [(ngModel)]="d.task_title">
+                            </div>
+                        </td> -->
+                        <td>
+                            <div class="form-group m-0">
+                                <input class="form-control" type="text" [(ngModel)]="d.summary">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group m-0">
+                                <input class="form-control" type="text" [(ngModel)]="d.task_ref">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group m-0">
+                                <input class="form-control" type="text" [(ngModel)]="d.github_link">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group m-0">
+                                <input class="form-control" type="number" [(ngModel)]="d.hours">
+                            </div>
+                        </td>
+                        <td>
+                            <button class="red" (click)="deleteRow(i)">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody *ngIf="dataStatus && dataToSend.dayend_report_detail.length == 0">
+                    <tr>
+                        <td colspan="8">
+                            <app-no-data-found></app-no-data-found>
+                        </td>
+                    </tr>
+                </tbody>
+                <!-- <ng-container *ngIf="!dataStatus">
+                    <tbody [appSkeletonTabelLoader]="loaderOptions"></tbody>
+                </ng-container> -->
+
+            </table>
+        </div>
+    </div>
+</div>

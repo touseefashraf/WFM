@@ -1,0 +1,73 @@
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-1">
+        <div class="d-flex justify-content-between">
+            <!-- <h4>Settings</h4> -->
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="card border-primary mb-3">
+                    <div class="card-header">Settings</div>
+                    <div class="card-body text-primary">
+                        <form [formGroup]="dataForm" (ngSubmit)="update()" #f="ngForm">
+                            <div class="row" *ngIf="dataStatus=='done'">
+
+
+                                <div class="col-md-3 mb-1">
+                                    <label class="mb-0">Allowed Leaves:<span class="mendatory">*</span></label>
+                                    <input style="margin-top: 10px!important;" formControlName="leaves_allowed" type="text" mask="separator.0" thousandSeparator="," class="form-control mt-0" required>
+
+                                </div>
+
+                                <div class="col-md-3 mb-1">
+                                    <label class="mb-0">Project fee:<span class="mendatory">*</span></label>
+                                    <input style="margin-top: 10px!important;" formControlName="normal_project_fee" type="text" mask="separator.0" thousandSeparator="," class="form-control mt-0" required>
+
+                                </div>
+
+                                <div class="col-md-3 mb-1">
+                                    <label class="mb-0">Recruiter fee:<span class="mendatory">*</span></label>
+                                    <input style="margin-top: 10px!important;" formControlName="recruiter_project_fee" type="text" mask="separator.0" thousandSeparator="," class="form-control mt-0" required>
+
+                                </div>
+
+                                <div class="col-md-3 mb-1">
+                                    <label class="mb-0">Default Currency: <span class="mendatory">*</span></label>
+                                    <select style="margin-top: 10px!important;" formControlName="default_currency_id">
+                                        <option *ngFor="let c of currency" [value]="c.id">{{c.full_name}}</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-3 mb-1">
+                                    <label class="mb-0">Opening Time:<span class="mendatory">*</span></label>
+                                    <timepicker class="time-custom" formControlName="startTime" required>
+                                    </timepicker>
+                                </div>
+                                <div class="col-md-3 mb-1">
+                                    <label class="mb-0">Closing Time:<span class="mendatory">*</span></label>
+                                    <timepicker class="time-custom" formControlName="endTime" required>
+                                    </timepicker>
+                                </div>
+
+
+                            </div>
+
+                            <ng-container *ngIf="dataStatus == 'fetching'">
+
+                                <table class="table table-striped">
+                                    <tbody [appSkeletonTabelLoader]="loaderOptions"></tbody>
+                                </table>
+
+                            </ng-container>
+
+                            <button type="submit" class="blue sm m-1" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Update
+                                <span></span><span></span><span></span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

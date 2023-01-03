@@ -1,0 +1,38 @@
+<!-- <a [routerLink]="['projects-list']" routerLinkActive="router-link-active">List</a>
+<a [routerLink]="['general-details']" routerLinkActive="router-link-active">general-details</a>
+<a [routerLink]="['projects-document']" routerLinkActive="router-link-active">projects-document</a> -->
+
+<div class="headbar">
+    <div>
+        <div>
+            <ul id="progressbar" *ngIf="selectedId== -1">
+                <li [ngClass]="{'active': step == 'general-details'}" id="projectDetails">
+                    <p>General Details</p>
+                </li>
+                <li [ngClass]="{'active': step == 'projects-document'}" id="projectsDocument">
+                    <p>Projects Document</p>
+                </li>
+                <li [ngClass]="{'active': step == 'project-milestones'}" id="projectMilestones">
+                    <p>Projects Milestone</p>
+                </li>
+                <li [ngClass]="{'active': step == 'project-credentials'}" id="projectCredentials">
+                    <p>Projects Credential</p>
+                </li>
+            </ul>
+            <ul id="progressbar" *ngIf="selectedId > -1">
+                <li (click)="ds.navigateWindow({id:selectedId,step : 'general-details'})" [ngClass]="{'active': step == 'general-details'}" id="projectDetails">
+                    <p>General Details</p>
+                </li>
+                <li (click)="ds.navigateWindow({id:selectedId, step : 'projects-document'})" [ngClass]="{'active': step == 'projects-document'}" id="projectsDocument">
+                    <p>Projects Document</p>
+                </li>
+                <li (click)="ds.navigateWindow({id:selectedId, step : 'project-milestones'})" [ngClass]="{'active': step == 'project-milestones'}" id="projectMilestones">
+                    <p>Projects Milestone</p>
+                </li>
+                <li (click)="ds.navigateWindow({id:selectedId, step : 'project-credentials'})" [ngClass]="{'active': step == 'project-credentials'}" id="projectCredentials">
+                    <p>Projects Credential</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

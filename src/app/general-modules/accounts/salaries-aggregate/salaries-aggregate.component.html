@@ -1,0 +1,67 @@
+<!-- <p>
+    salaries-aggregate works!
+</p> -->
+
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-1">
+        <div class="row mb-1">
+            <div class="col-md-3">
+                <label>Start Month<span class="mendatory">*</span></label>
+                <input class="form-control" type="text" [(ngModel)]="filters.startMonth" bsDatepicker [bsConfig]="{minMode:'month',  adaptivePosition: true, dateInputFormat: 'MMMM YYYY' }">
+            </div>
+            <div class="col-md-3">
+                <label>End Month<span class="mendatory">*</span></label>
+                <input class="form-control" type="text" [(ngModel)]="filters.endMonth" bsDatepicker [bsConfig]="{minMode:'month',  adaptivePosition: true, dateInputFormat: 'MMMM YYYY' }">
+            </div>
+            <div class="col-md-3 search-btn">
+                <button [disabled]="loginLoading" class="green" [ngClass]="loginLoading?'in-progress':''" (click)="search()">Search
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+        <div class="card">
+            <h4 class="card-header">Monthly Salaries Summary</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Sr #</th>
+                                <th>Month</th>
+                                <th>Year</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="dataStatus == 'done'">
+                            <tr *ngFor="let s of salariesAggregateList; let i = index">
+                                <td>{{ i+1 }} </td>
+                                <td>{{ s.month }}</td>
+                                <td>{{ s.year }}</td>
+                                <td>{{ s.amount | mask: 'separator':',' }} </td>
+                            </tr>
+                        </tbody>
+                        <ng-container *ngIf="dataStatus == 'fetching' && searched">
+                            <tbody [appSkeletonTabelLoader]="loaderOptions"></tbody>
+                        </ng-container>
+                        <tbody *ngIf="salariesAggregateList.length == 0 && dataStatus == 'done'">
+                            <tr>
+                                <td colspan="4">
+                                    <app-no-data-found></app-no-data-found>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody *ngIf="!searched">
+                            <tr>
+                                <td colspan="4">
+                                    <div class="no-data-wrapper">
+                                        <h2>Please Select all fields and click serach to get list.</h2>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

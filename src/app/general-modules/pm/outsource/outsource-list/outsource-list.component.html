@@ -1,0 +1,68 @@
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-1">
+        <div class="d-flex justify-content-end">
+            <button *ngIf="api.checkPermission('add-outsourcer')" [routerLink]="['/'+userType+'/outsource/project-info']" routerLinkActive="router-link-active" class="green sm mb-2">Add</button>
+        </div>
+        <div class="card">
+            <h4 class="card-header">Outsource resource</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Type</th>
+                                <th>Contact</th>
+                                <th *ngIf="api.checkPermissions(['update-outsourcer','delete-outsourcer'])" class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="dataStatus == 'done'">
+                            <tr *ngFor="let d of sourceList; let i = index">
+                                <td>{{d.name}} </td>
+                                <td>{{d.email}} </td>
+                                <td>{{d.type}}</td>
+                                <td>{{d.contact_1}}</td>
+                                <td class=" d-flex justify-content-center" *ngIf="api.checkPermissions(['update-outsourcer','delete-outsourcer'])">
+
+                                    <div class="image-upload" *ngIf="api.checkPermission('update-outsourcer')">
+
+                                        <span class="themeCol2">
+                                            <a [routerLink]="['/'+userType+'/outsource/project-info']" [queryParams]="{id: d.id}"><i class="fa fa-edit"></i></a>
+                                        </span>
+
+                                    </div>
+
+                                    <div class="px-2 danger" *ngIf="api.checkPermission('delete-outsourcer')">
+                                        <i class="fa fa-trash" (click)="confirmingModal(confirming, d.id,i)"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <ng-container *ngIf="dataStatus == 'fetching'">
+                            <tbody [appSkeletonTabelLoader]="loaderOptions"></tbody>
+                        </ng-container>
+                        <tbody *ngIf="sourceList.length == 0 && dataStatus == 'done'">
+                            <tr>
+                                <td colspan="6">
+                                    <app-no-data-found></app-no-data-found>
+                                </td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #confirming>
+    <div class="modal-body text-center">
+        <p>Do you want to Delete?</p>
+        <button type="button" class="green sm" (click)="modalRef.hide()">No</button>
+        <button type="button" class="red sm mr-1" (click)="delete()" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Yes
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</ng-template>

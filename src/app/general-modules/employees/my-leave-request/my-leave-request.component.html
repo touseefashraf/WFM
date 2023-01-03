@@ -1,0 +1,168 @@
+<!-- <p>
+  fiscal-year works!
+</p> -->
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-1">
+        <div class="d-flex justify-content-end">
+            <button *ngIf="api.checkPermission('request-for-leave')" class="green sm mb-2" (click)="openModalSubject(fyAdder, -1)">Add Request</button>
+        </div>
+        <div class="card">
+            <h4 class="card-header">Leave Requests</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Days</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th class="text-center" *ngIf="api.checkPermission('request-for-leave')" >Actions</th>
+                            </tr>
+                        </thead>
+                        <ng-container *ngIf="dataStatus == 'fetching'">
+                            <tbody [appSkeletonTabelLoader]="loaderOptions"></tbody>
+                        </ng-container>
+                        <ng-container *ngIf="dataStatus == 'done'">
+                            <tbody *ngIf="dataList.length > 0; else noDataFound">
+                                <tr *ngFor="let d of dataList; let i = index">
+                                    <td>{{d.start_date |  date:'longDate' }} </td>
+                                    <td>{{d.end_date |  date:'longDate' }} </td>
+                                    <td>{{d.leave_days}} </td>
+                                    <td>{{d.description}} </td>
+                                    <td>
+                                        <span *ngIf="d.approval_status=='pending'" class="i-badge yellow sm status">{{d.approval_status}}</span>
+                                        <span *ngIf="d.approval_status=='approved'" class="i-badge green sm status">{{d.approval_status}}</span>
+                                        <span *ngIf="d.approval_status=='rejected'" class="i-badge red sm status">{{d.approval_status}}</span>
+                                    </td>
+                                    <td class="d-flex justify-content-center align-content-center" *ngIf="api.checkPermission('request-for-leave')" >
+                                        <div class="px-3" *ngIf="d.approval_status=='pending'">
+                                            <i class="fa fa-trash" (click)="confirmingModal(confirming, d.id,i)"></i>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <ng-template #noDataFound>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="12">
+                                            <app-no-data-found></app-no-data-found>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </ng-template>
+                        </ng-container>
+                    </table>
+                    <nav *ngIf="dataStatus == 'done'">
+                        <ul class="pagination justify-content-left  mt-3">
+                            <li class="page-item">
+                                <small *ngIf="filters.page<10">Current Page: 0{{filters.page}}</small>
+                                <small *ngIf="filters.page>=10">Current Page: {{filters.page}}</small>
+                            </li>
+                        </ul>
+                        <ul class="pagination justify-content-left">
+                            <li class="page-item" *ngIf="pagination.prev_page_url != null">
+                                <a class="page-link" href="javascript: void(0)" tabindex="-1" (click)="setPagination(filters.page-1)">Previous</a>
+                            </li>
+                            <li class="page-item disabled" *ngIf="pagination.prev_page_url == null">
+                                <a class="page-link" href="javascript: void(0)" tabindex="-1">Previous</a>
+                            </li>
+                            <ng-container *ngIf="pagination.last_page <= 6">
+                                <ng-container *ngFor="let p of [].constructor(pagination.last_page); let i=index">
+                                    <li [class]="filters.page==(i+1) ? 'page-item active' : 'page-item'">
+                                        <a class="page-link" href="javascript: void(0)" (click)="setPagination(i+1)">{{i+1}}</a>
+                                    </li>
+                                </ng-container>
+                            </ng-container>
+                            <ng-container *ngIf="pagination.last_page >= 7">
+                                <ng-container *ngFor="let p of [].constructor(pagination.last_page); let i=index">
+                                    <li *ngIf="i<4" [class]="filters.page==(i+1) ? 'page-item active' : 'page-item'">
+                                        <a class="page-link" href="javascript: void(0)" (click)="setPagination(i+1)">{{i+1}}</a>
+                                    </li>
+                                    <li *ngIf="(pagination.last_page-i) == 3" [class]="filters.page==(i+1) ? 'page-item active' : 'page-item'">
+                                        <a class="page-link">...</a>
+                                    </li>
+                                    <li *ngIf="(pagination.last_page-i)==1 || (pagination.last_page-i)==2" [class]="filters.page==(i+1) ? 'page-item active' : 'page-item'">
+                                        <a class="page-link" href="javascript: void(0)" (click)="setPagination(i+1)">{{i+1}}</a>
+                                    </li>
+                                </ng-container>
+                            </ng-container>
+                            <li class="page-item" *ngIf="pagination.next_page_url != null">
+                                <a class="page-link" href="javascript: void(0)" tabindex="-1" (click)="setPagination(+filters.page+1)">Next</a>
+                            </li>
+                            <li class="page-item disabled" *ngIf="pagination.next_page_url == null">
+                                <a class="page-link" href="javascript: void(0)" tabindex="-1">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #fyAdder>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Add Leave Request</h4>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="formData" #f="ngForm">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Start Date <span class="mendatory">*</span></label>
+                                <input type="text" class="form-control" bsDatepicker (bsValueChange)="getDays($event,'start')" [minDate]="minDate" [bsConfig]="{ dateInputFormat: 'MMMM Do YYYY',adaptivePosition: true }" formControlName="start_date" placeholder="Enter Start Date" [ngClass]="{'form-submitted': f.submitted}"/>
+                                <div *ngIf="ui.checkErrors(g.start_date, f)" class="errors">
+                                    <p *ngIf="g.start_date.errors.required">Start Date required</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>End Date<span class="mendatory">*</span></label>
+                                <input type="text" (bsValueChange)="getDays($event,'end')" class="form-control" bsDatepicker  [minDate]="minDate" [bsConfig]="{ dateInputFormat: 'MMMM Do YYYY',adaptivePosition: true }" formControlName="end_date" placeholder="Enter End Date" [ngClass]="{'form-submitted': f.submitted}"/>
+                                <div *ngIf="ui.checkErrors(g.end_date, f)" class="errors">
+                                    <p *ngIf="g.end_date.errors.required">End Date required</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Days:<span class="mendatory">*</span></label>
+                            <input readonly formControlName="leave_days" type="text" class="form-control mt-0" placeholder="0" [ngClass]="{'form-submitted': f.submitted}">
+                            <div *ngIf="ui.checkErrors(g.leave_days, f)" class="errors">
+                                <p *ngIf="g.leave_days.errors.required">Leave days is required</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Description <span class="mendatory">*</span></label>
+                                <textarea rows="5" formControlName="description" class="form-control" [ngClass]="{'form-submitted': f.submitted}" placeholder="Enter Description"></textarea>
+                                <div *ngIf="ui.checkErrors(g.description, f)" class="errors">
+                                    <p *ngIf="g.description.errors.maxlength">Description should not be more than 1000 Characters</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" appSmartClick (smartClick)="save(f)" class="green sm m-1" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">save
+                <span></span><span></span><span></span>
+            </button>
+            <button type="button" class="red sm ml-1" (click)="cancelButton(f)">Cancel</button>
+
+        </form>
+    </div>
+</ng-template>
+<ng-template #confirming>
+    <div class="modal-body text-center">
+        <p>Do you want to Delete?</p>
+        <button type="button" class="sm black" (click)="modalRef.hide()">No</button>
+        <button type="button" class="sm green" (click)="delete()" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Yes
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</ng-template>

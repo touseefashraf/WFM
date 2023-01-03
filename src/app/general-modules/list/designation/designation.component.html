@@ -1,0 +1,96 @@
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-1">
+        <div class="d-flex justify-content-end">
+            <button *ngIf="api.checkPermission('add-designation')" class="green sm mb-2" (click)="openModal(addForm, -1)">Add New Deasignation</button>
+        </div>
+        <div class="card">
+            <h4 class="card-header">Designations</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th class="text-center" *ngIf="api.checkPermissions(['add-designation','update-designation','delete-designation'])"
+                                >Action</th>
+                            </tr>
+                        </thead>
+
+                        <ng-container *ngIf="dataList.length> 0">
+                            <tbody>
+                                <tr *ngFor="let d of dataList; let i= index">
+                                    <td>{{ d.title }}</td>
+                                    <td>{{ d.description }}</td>
+                                    <td class="d-flex justify-content-center" *ngIf="api.checkPermissions(['add-designation','update-designation','delete-designation'])">
+
+                                        <div class="image-upload" *ngIf="api.checkPermission('update-designation')">
+                                            <label for="file-input" (click)="openModal(addForm,i)">
+                                                <span  class="themeCol2"><i class="fa fa-edit"></i></span>
+                                            </label>
+                                        </div>
+                                        <div class="px-3" *ngIf="api.checkPermission('delete-designation')">
+                                            <i class="fa fa-trash" (click)="confirmingModal(designationConfirming, d.id,i)"></i>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </ng-container>
+
+                        <ng-container *ngIf="dataStatus == 'fetching'">
+                            <tbody [appSkeletonTabelLoader]="loaderOptions"></tbody>
+                        </ng-container>
+
+                        <ng-template #noDataFound>
+                            <tbody>
+                                <tr>
+                                    <td colspan="3">
+                                        <app-no-data-found></app-no-data-found>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </ng-template>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #addForm>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">{{modalTitle}}</h4>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="dataForm" (ngSubmit)="save(f)" #f="ngForm">
+            <div class="row">
+                <div class="col-md-12 mb-1">
+                    <label class="mb-0">Title <span class="mendatory">*</span></label>
+                    <input formControlName="title" class="form-control mt-0" placeholder="Enter Title" [ngClass]="{'form-submitted': f.submitted}">
+                    <div *ngIf="ui.checkErrors(g.title, f)" class="errors">
+                        <p *ngIf="g.title.errors.required">Title is required</p>
+                    </div>
+                </div>
+                <div class="col-md-12 mb-1">
+                    <label class="mb-0">Description <span class="mendatory">*</span></label>
+                    <textarea rows="5" formControlName="description" autocomplete="off" class="form-control mt-0" placeholder="Description" [ngClass]="{'form-submitted': f.submitted}"></textarea>
+                </div>
+            </div>
+            <button type="submit" class="red sm m-1" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">save
+                <span></span><span></span><span></span>
+            </button>
+            <button type="button" class="black sm ml-1" (click)="cancelButton(f)">Cancel</button>
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #designationConfirming>
+    <div class="modal-body text-center">
+        <p>Do you want to Delete?</p>
+        <button type="button" class="sm black" (click)="modalRef.hide()" (click)="resetIndex()">No</button>
+        <button type="button" class="sm green" (click)="delete()" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Yes
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</ng-template>

@@ -1,0 +1,34 @@
+<div class="headbar">
+    <div>
+        <div>
+            <ul id="progressbar" *ngIf="selectedId== -1">
+                <li [ngClass]="{'active': step == 'personal-info'}" id="personalInfo">
+                    <p>Personal Info</p>
+                </li>
+                <li [ngClass]="{'active': step == 'salary-details'}" id="saleryDetails">
+                    <p>Salery Details</p>
+                </li>
+                <li [ngClass]="{'active': step == 'permissions'}" id="permissions">
+                    <p>Permissions</p>
+                </li>
+                <li [ngClass]="{'active': step == 'roles'}" id="roles">
+                    <p>Roles</p>
+                </li>
+            </ul>
+            <ul id="progressbar" *ngIf="selectedId > -1">
+                <li (click)="ds.navigateWindow({id:selectedId,step : 'personal-info'})" [ngClass]="{'active': step == 'personal-info'}" id="personalInfo">
+                    <p>Personal Info</p>
+                </li>
+                <li (click)="ds.navigateWindow({id:selectedId, step : 'salary-details'})" [ngClass]="{'active': step == 'salary-details'}" id="saleryDetails">
+                    <p>Salery Details</p>
+                </li>
+                <li (click)="ds.navigateWindow({id:selectedId, step : 'permissions'})" [ngClass]="{'active': step == 'permissions'}" id="permissions">
+                    <p>Permissions</p>
+                </li>
+                <li (click)="ds.navigateWindow({id:selectedId, step : 'roles'})" [ngClass]="{'active': step == 'roles'}" id="roles">
+                    <p>Roles</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

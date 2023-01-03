@@ -1,0 +1,149 @@
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-1">
+        <div class="row mb-1">
+            <div class="col-md-4">
+                <div class="form-group m-0">
+                    <select *ngIf="!dataStatus; else ProjectOptions">
+                        <option>Loading Projects</option>
+                    </select>
+                    <ng-template #ProjectOptions>
+                        <select class="form-control" (change)="getCurrentId($event.target.value)">
+                            <option [value]="null">Select any Projects</option>
+                            <option *ngFor="let p of projectList" [value]="p.id">{{p.title}}</option>
+                        </select>
+                    </ng-template>
+                </div>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button class="green" style="margin: 0;" (click)="searchDetails()" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Show Details
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+        <div class="row mt-3" *ngIf="projectInfo!==null">
+            <div class="col-md-6">
+                <div class="card">
+                    <h4 class="card-header">Project Detail</h4>
+                    <div class="card-body">
+                        <div class="row col-md-12">
+                            <div class="clearfix">Project Name:<b> {{projectInfo.project_details.title}}</b></div>
+                            <div class="clearfix">Client Name: <b> {{projectInfo.project_details.client.first_name}} {{projectInfo.project_details.client.last_name}}</b></div>
+                            <div class="clearfix">Award Date: <b> {{projectInfo.project_details.awarded_date}}</b></div>
+                            <div class="clearfix">Start Date: <b> {{projectInfo.project_details.start_date}}</b></div>
+                            <div class="clearfix">End Date: <b> {{projectInfo.project_details.deadline}}</b></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <h4 class="card-header">Financial Summary</h4>
+                    <div class="card-body">
+                        <div class="row col-md-12">
+                            <div class="col-md-6">
+                                <b>T. Productive Hours:</b>
+                                <span>
+                                    <h3>{{totalHours}} hrs</h3>
+                                </span>
+                                <b>T. Cost:</b>
+                                <h2>{{netTotalCost | mask: 'separator':',' }} PKR</h2>
+                            </div>
+                            <div class="col-md-6">
+                                T. Budjet: <b>{{projectInfo.project_details.initial_budget | mask: 'separator':',' }} {{currency}}</b><br>
+                                Outstanding Funds: <b>{{(projectInfo.project_details.initial_budget- +totalReleasedAmount) | mask: 'separator':',' }} {{currency}} </b><br>
+                                Estimated Outstanding: <b>{{this.currencyRate*(projectInfo.project_details.initial_budget- +totalReleasedAmount) | mask: 'separator':',' }} PKR</b><br>
+                                T. Funded Amount: <b>{{amountFunded | mask: 'separator':',' }} {{currency}}</b><br>
+                                T. Non Funded Amount: <b>{{amountNotFunded | mask: 'separator':','}} {{currency}}</b><br>
+                                T. Released Amount: <b style="float: right;">{{totalReleasedAmount  | mask: 'separator':',' }} {{currency}}<br><span>{{releasedAmountPKR | mask: 'separator':','}} PKR</span> </b>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 mb-1" *ngIf="projectInfo!==null">
+        <div class="card">
+            <h4 class="card-header">Project Cost Breakdown</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Employee Details</th>
+                                <th>T. Hours Spent</th>
+                                <th>Per Hour</th>
+                                <th>T. Cost</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="financialDetails.length > 0 && dataStatus">
+                            <tr *ngFor="let entry of financialDetails; let indexReport = index">
+                                <td>
+                                    <b>ID:</b> {{entry.employee_id}}<br>
+                                    <b>Name:</b> {{entry.user?.first_name}} {{entry.user?.last_name}}
+                                </td>
+                                <td>{{entry.hours}}</td>
+                                <td>{{entry.hourly_rate | mask: 'separator':',' }}</td>
+                                <td>{{entry.hours*entry.hourly_rate | mask: 'separator':','}}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="3" class="text-right">Net Total</th>
+                                <th>{{netTotalCost | mask: 'separator':',' }} PKR</th>
+                            </tr>
+                        </tbody>
+                        <tbody *ngIf="dataStatus && financialDetails.length == 0">
+                            <tr>
+                                <td colspan="4">
+                                    <app-no-data-found></app-no-data-found>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 mb-1" *ngIf="projectPayments!==null">
+        <div class="card">
+            <h4 class="card-header">Project Payment Breakdown</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Dated</th>
+                                <th>Outstanding Amount</th>
+                                <th>Released Amount</th>
+                                <th>Remaining Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let payment of projectPayments; let indexReport = index">
+                                <td>{{payment.id}}</td>
+                                <td>{{payment.created_at}}</td>
+                                <td>{{payment.outstanding_amount | mask: 'separator':',' }}</td>
+                                <td>{{payment.released_amount | mask: 'separator':',' }}</td>
+                                <td>{{payment.remaining_amount | mask: 'separator':',' }}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="4" class="text-right">Net Total</th>
+                                <th>{{releasedAmountPKR | mask: 'separator':',' }} PKR</th>
+                            </tr>
+                        </tbody>
+                        <tbody *ngIf="dataStatus && financialDetails.length == 0">
+                            <tr>
+                                <td colspan="3">
+                                    <app-no-data-found></app-no-data-found>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

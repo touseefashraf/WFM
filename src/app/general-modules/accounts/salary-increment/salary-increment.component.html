@@ -1,0 +1,61 @@
+<!-- <p>
+    salary-increment works!
+</p> -->
+
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-1">
+
+        <div class="row mb-1">
+            <div class="col-md-5">
+                <div class="form-group m-0">
+                    <select class="form-control" [(ngModel)]="employeeId">
+                        <option value="">Select Employee</option>
+                        <option *ngFor="let e of employeeList" [value]="e.id">{{e.user.first_name}} {{e.user.last_name}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <button class="green" (click)="search()" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Search
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+        <div class="card">
+            <h4 class="card-header">Salary Increment List</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Start Month</th>
+                                <th>Start Year</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="dataStatus == 'done'">
+                            <tr *ngFor="let s of salaryIncrementList; let i = index">
+                                <td>{{s.employee.title+'. '+s.employee.user.first_name+' '+s.employee.user.last_name}} </td>
+                                <td>{{s.description}} </td>
+                                <td>{{s.amount | mask: 'separator':','}}</td>
+                                <td>{{s.start_month}}</td>
+                                <td>{{s.start_year}}</td>
+                            </tr>
+                        </tbody>
+                        <ng-container *ngIf="dataStatus == 'fetching'">
+                            <tbody [appSkeletonTabelLoader]="loaderOptions"></tbody>
+                        </ng-container>
+                        <tbody *ngIf="salaryIncrementList.length == 0 && dataStatus == 'done'">
+                            <tr>
+                                <td colspan="5">
+                                    <app-no-data-found></app-no-data-found>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

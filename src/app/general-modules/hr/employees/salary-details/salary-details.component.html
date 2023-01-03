@@ -1,0 +1,70 @@
+<app-steps-template [step]="'salary-details'"></app-steps-template>
+<div class="row justify-content-center mt-3" *ngIf="dataStatus">
+    <div class="col-md-11">
+        <!-- <h4 class="font-bold mb-3">Manage Employee</h4> -->
+        <div class="">
+            <form [formGroup]="saleryForm" (ngSubmit)="save(saleryForm)" #f="ngForm">
+                <div class="button-box">
+                    <button type="button" class="red" [routerLink]="['/admin/employees/list']" routerLinkActive="router-link-active">Goto List</button>
+                    <button type="button" class="blue" [routerLink]="['/admin/employees/personal-info']" [queryParams]="{id:employeeId}" routerLinkActive="router-link-active">Back</button>
+                    <button type="submit" class="green" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Save & Next
+                        <span></span><span></span><span></span>
+                    </button>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="mb-0">Basic Salery<span class="mendatory">*</span></label>
+                                    <input formControlName="basic_salary" type="text" mask="separator.0" thousandSeparator="," class="form-control" placeholder="Enter Basic Salery" [ngClass]="{'form-submitted': f.submitted}">
+                                    <div *ngIf="ui.checkErrors(g.basic_salary, f)" class="errors">
+                                        <p *ngIf="g.basic_salary.errors.required">Basic Salery is required</p>
+                                        <p *ngIf="g.basic_salary.errors.min">Basic Salery can,t be less then 0</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="mb-0">Medical<span class="mendatory">*</span></label>
+                                    <input formControlName="medical" type="text" mask="separator.0" thousandSeparator="," class="form-control" placeholder="Enter Medical" [ngClass]="{'form-submitted': f.submitted}">
+                                    <div *ngIf="ui.checkErrors(g.medical, f)" class="errors">
+                                        <p *ngIf="g.medical.errors.required">Medical is required</p>
+                                        <p *ngIf="g.medical.errors.min">Medical can,t be less then 0</p>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="mb-0">Transport<span class="mendatory">*</span></label>
+                                    <input formControlName="transport" type="text" mask="separator.0" thousandSeparator="," class="form-control" placeholder="Enter Transport" [ngClass]="{'form-submitted': f.submitted}">
+                                    <div *ngIf="ui.checkErrors(g.transport, f)" class="errors">
+                                        <p *ngIf="g.transport.errors.required">Transport is required</p>
+                                        <p *ngIf="g.transport.errors.min">Transport can,t be less then 0</p>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="mb-0">Mobile<span class="mendatory">*</span></label>
+                                    <input formControlName="mobile" type="text" mask="separator.0" thousandSeparator="," class="form-control" placeholder="Enter Mobile No." [ngClass]="{'form-submitted': f.submitted}">
+                                    <div *ngIf="ui.checkErrors(g.mobile, f)" class="errors">
+                                        <p *ngIf="g.mobile.errors.required">Mobile No. is required</p>
+                                        <p *ngIf="g.mobile.errors.min">Mobile can,t be less then 0</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<div class="details-container" *ngIf="!dataStatus">
+    <img src="/assets/img/loading.gif" style="width: 70px; margin-top: 5%;">
+</div>

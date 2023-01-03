@@ -1,0 +1,102 @@
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-1">
+
+        <div class="row mb-1">
+            <div class="col-md-5">
+                <div class="form-group m-0">
+                    <label>Date</label>
+                    <input class="form-control" type="text" bsDaterangepicker [bsConfig]="{ rangeInputFormat : 'MMMM Do YYYY', dateInputFormat: 'MMMM Do YYYY',adaptivePosition: true ,isAnimated: true}" [(ngModel)]="date">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group m-0">
+                    <label>Employee</label>
+                    <select class="form-control" [(ngModel)]="filters.employee_id">
+                        <option [value]="null">Select Option</option>
+                        <option *ngFor="let e of employeeList" [value]="e.id">{{e.user.first_name}} {{e.user.last_name}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button class="green" (click)="search()" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Search
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+        <div class="card">
+            <h4 class="card-header">Day End Report Details</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-straped">
+                        <thead>
+                            <tr>
+                                <th>Employee Details</th>
+                                <th>Report Summary</th>
+                                <th class="text-center">Task Details</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="reportDetailsList.length > 0 && dataStatus">
+                            <tr *ngFor="let report of reportDetailsList; let indexReport = index">
+                                <td>
+                                    <p><b>Name:</b> {{report.employee?.user?.first_name}} {{report.employee?.user?.last_name}}</p>
+                                    <p *ngIf="report.attendance?.checkin">{{moment(report.attendance?.checkin).format('MMM DD, YYYY hh:mm A')}}</p>
+                                    <p *ngIf="report.attendance?.checkout">{{moment(report.attendance?.checkout).format('MMM DD, YYYY hh:mm A')}}</p>
+                                    <p><b>T.Hours</b> {{getTotalHours(report)}}</p>
+                                </td>
+                                <td [innerHtml]="report.work_summary"></td>
+                                <!-- Inner table -->
+                                <td class="inner-table">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Sr. #</th>
+                                                    <th>Project Name</th>
+                                                    <th>Hours Spent</th>
+                                                    <th>Task Summary</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody *ngIf="report.dayend_report_details.length > 0">
+                                                <tr *ngFor="let reportDetail of report.dayend_report_details; let indexReportDetails = index">
+                                                    <td>{{indexReportDetails+1}}</td>
+                                                    <td><a target="_blank" [href]="getProjectRepoLink(reportDetail)">{{getProjectName(reportDetail)}}</a></td>
+                                                    <td>
+                                                        <div class="d-flex">
+                                                            <span class="mr-2">{{reportDetail.hours}}</span>
+                                                            <a target="_blank" [href]="reportDetail.github_link"><i class="fas fa-external-link-alt"></i></a>
+                                                        </div>
+                                                    </td>
+                                                    <td>{{reportDetail.summary}}</td>
+                                                </tr>
+                                            </tbody>
+                                            <tbody *ngIf="report.dayend_report_details.length == 0">
+                                                <tr>
+                                                    <td colspan="6">
+                                                        <app-no-data-found></app-no-data-found>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                                <!-- Inner table Ends -->
+
+                            </tr>
+                        </tbody>
+                        <tbody *ngIf="dataStatus && reportDetailsList.length == 0">
+                            <tr>
+                                <td colspan="3">
+                                    <app-no-data-found></app-no-data-found>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <!-- <ng-container *ngIf="!dataStatus">
+                            <tbody [appSkeletonTabelLoader]="loaderOptions"></tbody>
+                        </ng-container> -->
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

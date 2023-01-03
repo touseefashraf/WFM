@@ -1,0 +1,125 @@
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-1">
+        <div class="d-flex justify-content-between">
+            <h4>Employee Salery List</h4>
+            <button class="red sm mb-2" (click)="openModalSalery(saleryTemplete,-1)">Add</button>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-sm table-hover">
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Basic Salary</th>
+                    <th>Medical</th>
+                    <th>Transport</th>
+                    <th>Mobile</th>
+                    <th width="245px" class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody *ngIf="saleriesList.length > 0 && dataStatus">
+                <tr *ngFor="let d of saleriesList; let i = index">
+                    <td class="extra-details">
+                        <p><b>Name: </b>{{d.employee.user.first_name}} {{d.employee.user.last_name}}</p>
+                        <p><b>Contact: </b>{{d.employee.contact_1}}, {{d.employee.contact_2}}</p>
+                        <p><b>designation: </b>{{d.employee.designation}}</p>
+                        <p><b>Account No.: </b>{{d.employee.account_no}}</p>
+                        <p><b>address: </b>{{d.employee.address}}</p>
+                    </td>
+                    <td>{{d.basic_salary}}</td>
+                    <td>{{d.medical}} </td>
+                    <td>{{d.transport}} </td>
+                    <td>{{d.mobile}} </td>
+                    <td>
+                        <div class="d-flex justify-content-center">
+                            <button type="button" class="sm green" (click)="openModalSalery(saleryTemplete,i)">Edit</button>
+                            <button type="button" class="sm red" (click)="confirmingModal(saleryConfirming, d.id,i)">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody *ngIf="saleriesList.length == 0 && dataStatus">
+                <tr>
+                    <td colspan="3">
+                        <app-no-data-found></app-no-data-found>
+                    </td>
+                </tr>
+            </tbody>
+            <!-- <tbody *ngIf="!dataStatus">
+                <tr>
+                    <td colspan="3">
+                        <p>Loader</p>
+                    </td>
+                </tr>
+            </tbody> -->
+        </table>
+    </div>
+</div>
+
+<ng-template #saleryTemplete>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Add Employee Salery</h4>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="bankForm" (ngSubmit)="saveBank(bankForm, f)" #f="ngForm">
+            <div class="row">
+                <div class="col-md-6 mb-1">
+                    <label class="mb-0">Employee</label>
+                    <select name="" id="" formControlName="employee_id" class="form-control mt-0" [ngClass]="{'form-submitted': f.submitted}">
+                        <option [value]="null">Select Employee</option>
+                        <option *ngFor="let d of employeeList" [value]="d.id">{{d.user.first_name}} {{d.user.last_name}}</option>
+                    </select>
+                    <div *ngIf="ui.checkErrors(g.employee_id, f)" class="errors">
+                        <p *ngIf="g.employee_id.errors.required">Please Select Employee</p>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-1">
+                    <label class="mb-0">Basic Salery</label>
+                    <input type="number" min="0" formControlName="basic_salary" class="form-control mt-0" placeholder="Enter Basic Salery" [ngClass]="{'form-submitted': f.submitted}">
+                    <div *ngIf="ui.checkErrors(g.basic_salary, f)" class="errors">
+                        <p *ngIf="g.basic_salary.errors.required">Basic Salery is required</p>
+                        <p *ngIf="g.basic_salary.errors.min">Basic Salery can,t be less then 0</p>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-1">
+                    <label class="mb-0">Medical</label>
+                    <input type="number" min="0" formControlName="medical" class="form-control mt-0" placeholder="Enter Medical" [ngClass]="{'form-submitted': f.submitted}">
+                    <div *ngIf="ui.checkErrors(g.medical, f)" class="errors">
+                        <p *ngIf="g.medical.errors.required">Medical is required</p>
+                        <p *ngIf="g.medical.errors.min">Medical can,t be less then 0</p>
+
+                    </div>
+                </div>
+                <div class="col-md-6 mb-1">
+                    <label class="mb-0">Transport</label>
+                    <input type="number" min="0" formControlName="transport" class="form-control mt-0" placeholder="Enter Transport" [ngClass]="{'form-submitted': f.submitted}">
+                    <div *ngIf="ui.checkErrors(g.transport, f)" class="errors">
+                        <p *ngIf="g.transport.errors.required">Transport is required</p>
+                        <p *ngIf="g.transport.errors.min">Transport can,t be less then 0</p>
+
+                    </div>
+                </div>
+                <div class="col-md-6 mb-1">
+                    <label class="mb-0">Mobile</label>
+                    <input type="number" min="0" formControlName="mobile" class="form-control mt-0" placeholder="Enter Mobile No." [ngClass]="{'form-submitted': f.submitted}">
+                    <div *ngIf="ui.checkErrors(g.mobile, f)" class="errors">
+                        <p *ngIf="g.mobile.errors.required">Mobile No. is required</p>
+                        <p *ngIf="g.mobile.errors.min">Transport can,t be less then 0</p>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="red sm m-1">save</button>
+            <button type="button" class="black sm ml-1" (click)="cancelBankButton(f)">Cancel</button>
+
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #saleryConfirming>
+    <div class="modal-body text-center">
+        <p>Do you want to Delete?</p>
+        <button type="button" class="red sm m-1" (click)="deleteBank()">Yes</button>
+        <button type="button" class="black sm ml-1" (click)="modalRef.hide()">No</button>
+    </div>
+</ng-template>

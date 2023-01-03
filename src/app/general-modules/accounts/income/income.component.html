@@ -1,0 +1,181 @@
+<div class="row m-3 no-gutters">
+  <div class="col-md-12 mb-1">
+      <div class="d-flex justify-content-end">
+          <button *ngIf="api.checkPermission('add-income')" class="green sm mb-2" (click)="openModal(addForm, -1)">Add Income </button>
+      </div>
+      <div class="card">
+            <h4 class="card-header">Income</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Income Category</th>
+                                <th>Description</th>
+                                <th class="text-right amount">Amount</th>
+                                <!-- <th class="text-center" *ngIf="api.checkPermission('delete-income')">Action</th> -->
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="dataStatus == 'done'">
+                            <tr *ngFor="let d of dataList; let i = index">
+                                <td>{{ d.title }}</td>
+                                <td>{{ d.income_category.title }}</td>
+                                <td>{{ d.description }}</td>
+                                <td class="text-right">{{ d.amount | mask: 'separator':',' }}</td>
+                                <!--
+                                <td class=" d-flex justify-content-center" *ngIf="api.checkPermission('delete-income')">
+                                    <div class="px-3">
+                                        <i class=" fa fa-trash" (click)="confirmingModal(AmenityConfirming, d.id,i)"></i>
+                                    </div>
+                                </td>
+                                 -->
+                            </tr>
+                        </tbody>
+
+                        <ng-container *ngIf="dataStatus == 'fetching'">
+                            <tbody [appSkeletonTabelLoader]="loaderOptions"></tbody>
+
+                        </ng-container>
+                        <ng-container *ngIf="dataStatus == 'noData'">
+                            <tbody>
+                                <tr>
+                                    <td colspan="5">
+                                        <app-no-data-found></app-no-data-found>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </ng-container>
+
+                    </table>
+                    <nav *ngIf="dataStatus == 'done'">
+                        <ul class="pagination justify-content-left  mt-3">
+                            <li class="page-item">
+                                <small *ngIf="filters.page<10">Current Page: 0{{filters.page}}</small>
+                                <small *ngIf="filters.page>=10">Current Page: {{filters.page}}</small>
+                            </li>
+                        </ul>
+                        <ul class="pagination justify-content-left">
+                            <li class="page-item" *ngIf="pagination.prev_page_url != null">
+                                <a class="page-link" href="javascript: void(0)" tabindex="-1" (click)="setPagination(filters.page-1)">Previous</a>
+                            </li>
+                            <li class="page-item disabled" *ngIf="pagination.prev_page_url == null">
+                                <a class="page-link" href="javascript: void(0)" tabindex="-1">Previous</a>
+                            </li>
+                            <ng-container *ngIf="pagination.last_page <= 6">
+                                <ng-container *ngFor="let p of [].constructor(pagination.last_page); let i=index">
+                                    <li [class]="filters.page==(i+1) ? 'page-item active' : 'page-item'">
+                                        <a class="page-link" href="javascript: void(0)" (click)="setPagination(i+1)">{{i+1}}</a>
+                                    </li>
+                                </ng-container>
+                            </ng-container>
+                            <ng-container *ngIf="pagination.last_page >= 7">
+                                <ng-container *ngFor="let p of [].constructor(pagination.last_page); let i=index">
+                                    <li *ngIf="i<4" [class]="filters.page==(i+1) ? 'page-item active' : 'page-item'">
+                                        <a class="page-link" href="javascript: void(0)" (click)="setPagination(i+1)">{{i+1}}</a>
+                                    </li>
+                                    <li *ngIf="(pagination.last_page-i) == 3" [class]="filters.page==(i+1) ? 'page-item active' : 'page-item'">
+                                        <a class="page-link">...</a>
+                                    </li>
+                                    <li *ngIf="(pagination.last_page-i)==1 || (pagination.last_page-i)==2" [class]="filters.page==(i+1) ? 'page-item active' : 'page-item'">
+                                        <a class="page-link" href="javascript: void(0)" (click)="setPagination(i+1)">{{i+1}}</a>
+                                    </li>
+                                </ng-container>
+                            </ng-container>
+                            <li class="page-item" *ngIf="pagination.next_page_url != null">
+                                <a class="page-link" href="javascript: void(0)" tabindex="-1" (click)="setPagination(+filters.page+1)">Next</a>
+                            </li>
+                            <li class="page-item disabled" *ngIf="pagination.next_page_url == null">
+                                <a class="page-link" href="javascript: void(0)" tabindex="-1">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #addForm>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Add Income</h4>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="dataForm" (ngSubmit)="save(dataForm, f)" #f="ngForm">
+            <div class="row">
+                <div class="col-md-6 mb-1">
+                    <label class="mb-0">Title <span class="mendatory">*</span></label>
+                    <input formControlName="title" class="form-control mt-0" placeholder="Enter Title" [ngClass]="{'form-submitted': f.submitted}">
+                    <div *ngIf="ui.checkErrors(g.title, f)" class="errors">
+                        <p *ngIf="g.title.errors.required">Title is required</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Income Categories <span class="mendatory">*</span></label>
+                        <select formControlName="income_category_id">
+                            <option value="null">Select Option</option>
+                            <option *ngFor="let cat of catList" value="{{cat.id}}">{{cat.title}}</option>
+
+                        </select>
+                        <div *ngIf="ui.checkErrors(g.income_category_id, f)" class="errors">
+                            <p *ngIf="g.income_category_id.errors.required">select Income Category</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="">Amount <span class="mendatory">*</span></label>
+                    <input formControlName="currencyAmount" type="text" (keyup)="changeAmount($event)" mask="separator.0" thousandSeparator="," class="form-control mt-0" placeholder="Enter currency amount">
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Currency <span class="mendatory">*</span></label>
+                        <select formControlName="currency_id" (change)="getRate($event)" [ngClass]="{'form-submitted': f.submitted}">
+                            <option *ngFor="let p of currencyList; let i = index" value="{{p.id}}">{{p.short_name}}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <ng-container *ngIf="checkCurrency == true">
+                    <div class="col-md-6">
+                        <label class="">Conversion Rate <span class="mendatory">*</span></label>
+                        <input type="number" readonly formControlName="conversionRate" [ngClass]="{'form-submitted': f.submitted}" class="form-control mt-0" placeholder="Enter Conversin Rate">
+                    </div>
+
+                    <div class="col-md-6 mb-1">
+                        <label class="mb-0">Amount (PRK)<span class="mendatory">*</span></label>
+                        <input type="text" mask="separator" thousandSeparator="," (keyup)="updateConversionRate($event)" formControlName="amount" class="form-control mt-0" placeholder="Enter Amount" [ngClass]="{'form-submitted': f.submitted}">
+                        <div *ngIf="ui.checkErrors(g.amount, f)" class="errors">
+                            <p *ngIf="g.amount.errors.required">Amount is required</p>
+                        </div>
+                    </div>
+
+
+                </ng-container>
+                <div class="col-md-12 mb-1">
+                    <label class="mb-0">description <span class="mendatory">*</span></label>
+                    <textarea rows="5" formControlName="description" autocomplete="off" class="form-control mt-0" placeholder="Description" [ngClass]="{'form-submitted': f.submitted}"></textarea>
+                    <!-- <div *ngIf="ui.checkErrors(g.email, f)" class="errors">
+                        <p *ngIf="g.email.errors.required">Email is required</p>
+                    </div> -->
+                </div>
+            </div>
+            <button type="submit" class="red sm m-1" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Save
+                <span></span><span></span><span></span>
+            </button>
+            <button type="button" class="black sm ml-1" (click)="cancelButton(f)">Cancel</button>
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #AmenityConfirming>
+    <div class="modal-body text-center">
+        <p>Do you want to Delete?</p>
+        <button type="button" class="sm black" (click)="modalRef.hide()" (click)="resetIndex()">No</button>
+        <button type="button" class="sm green" (click)="delete()" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Yes
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</ng-template>

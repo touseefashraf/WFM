@@ -1,0 +1,121 @@
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-1">
+        <div class="d-flex justify-content-end">
+            <button *ngIf="api.checkPermission('create-roles')" class="green sm mb-2" (click)="openModal(addForm, -1)">Add Role</button>
+        </div>
+        <div class="card">
+            <h4 class="card-header">Roles</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Sr. #</th>
+                                <th>Name</th>
+                                <th class="text-center" *ngIf="api.checkPermission('update-roles')">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="rolesList.length > 0 && dataStatus">
+                            <tr *ngFor="let d of rolesList; let i = index">
+                                <td>{{ i+1 }}</td>
+                                <td>{{ d.name }}</td>
+                                <td class=" d-flex justify-content-center" *ngIf="api.checkPermission('update-roles')">
+                                    <!-- <div class="px-3 danger">
+                                        <i class="fa fa-trash" (click)="confirmingModal(roleConfirming, d.id,i)"></i>
+                                    </div> -->
+                                    <div class="image-upload" >
+                                        <label for="file-input" (click)="openModal(addForm,i)">
+                                            <span class="themeCol2"><i class="fa fa-edit"></i></span>
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody *ngIf="rolesList.length == 0 && dataStatus">
+                            <tr>
+                                <td colspan="3">
+                                    <app-no-data-found></app-no-data-found>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <ng-container *ngIf="!dataStatus">
+                            <tbody [appSkeletonTabelLoader]="loaderOptions"></tbody>
+                        </ng-container>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #addForm>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Add Role</h4>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="dataForm" (ngSubmit)="save(dataForm, f)" #f="ngForm">
+            <div class="row">
+                <div class="col-md-6 mb-1">
+                    <label class="mb-0">Name<span class="mendatory">*</span></label>
+                    <input formControlName="name" class="form-control mt-0" placeholder="Enter Role Name" [ngClass]="{'form-submitted': f.submitted}">
+                    <div *ngIf="ui.checkErrors(g.name, f)" class="errors">
+                        <p *ngIf="g.name.errors.required">Name is required</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-1">
+                    <label class="mb-0">Search Permissions</label>
+                    <input [(ngModel)]="searchString" [ngModelOptions]="{standalone: true}" class="form-control mt-0" placeholder="Enter permission Name">
+                </div>
+                <div class="col-md-3 btn-custom">
+                    <button type="submit" class="red m-1" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Save
+                        <span></span><span></span><span></span>
+                    </button>
+                    <button type="button" class="black ml-1" (click)="cancelButton(f)">Cancel</button>
+                </div>
+            </div>
+
+
+            <div class="permissions-container">
+
+                <div class="permissions-list-box">
+                    <label class="mb-0 heading-permissions">Click on permissions to add in role</label>
+                    <div class="row">
+                        <div class="col-md-6" *ngFor="let d of permissionsList | filter:searchString; let i = index">
+                            <!-- <input *ngIf="selectedIndex > -1" [checked]="checkIfPermissionExist(d)" type="checkbox" [name]="d.id" [id]="d.id" (change)="addRemovePermission(d)">
+                            <input *ngIf="selectedIndex == -1" type="checkbox" [name]="d.id" [id]="d.id" (change)="addRemovePermission(d)">
+                            <label [for]="d.id">{{d.name}}</label> -->
+                            <div class="permissions-items" (click)="addRemovePermission(d)">
+                                {{d.name}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="arrow"><i class="fas fa-arrows-alt-h"></i></div>
+
+                <div class="permissions-list-box">
+                    <label class="mb-0 heading-permissions">Selected Permissions</label>
+                    <div class="row">
+                        <div class="col-md-6" *ngFor="let d of selectedPermissions; let i = index">
+                            <!-- <input checked="true" type="checkbox" [name]="d.id" [id]="d.id" (change)="addRemovePermission(d)">
+                            <label [for]="d.id">{{d.name}}</label> -->
+                            <div class="permissions-items" (click)="addRemovePermission(d)">
+                                {{d.name}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #roleConfirming>
+    <div class="modal-body text-center">
+        <p>Do you want to Delete?</p>
+        <button type="button" class="sm black" (click)="modalRef.hide()">No</button>
+        <button type="button" class="sm green" (click)="delete()" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Yes
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</ng-template>

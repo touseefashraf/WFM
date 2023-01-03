@@ -1,0 +1,76 @@
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-1">
+        <div class="d-flex justify-content-end">
+            <button *ngIf="api.checkPermission('add-client')" class="green sm mb-2" [routerLink]="['/'+userType+'/clients/addedit-client']" routerLinkActive="router-link-active">Add Client</button>
+        </div>
+        <div class="card">
+            <h4 class="card-header">Clients List</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Gender</th>
+                                <th>Contact</th>
+                                <th>Email</th>
+                                <th>Address</th>
+                                <th class="text-center" *ngIf="api.checkPermissions(['update-client','delete-client'])">Actions</th>
+                            </tr>
+                        </thead>
+                        <ng-container *ngIf="dataStatus == 'fetching'">
+                            <tbody [appSkeletonTabelLoader]="loaderOptions"></tbody>
+                        </ng-container>
+                        <ng-container *ngIf="dataStatus == 'done'">
+                            <tbody *ngIf="clientList.length > 0; else noDataFound">
+                                <tr *ngFor="let d of clientList; let i = index">
+                                    <td class="td-image-container">
+                                        <img [defaultImage]="spinnerSVG" [lazyLoad]="ds.clientImageUrl(d.id)" width="100" height="100">
+                                    </td>
+                                    <td>{{d.title}}. {{d.first_name}} {{d.last_name}} </td>
+                                    <td>{{d.gender}} </td>
+                                    <td>
+                                        <span *ngIf="d.contact_1"><b>Primary:</b> {{d.contact_1}}</span>
+                                        <span *ngIf="d.contact_2"><br><b>Secondary:</b> {{d.contact_2}}</span>
+                                    </td>
+                                    <td>{{d.email}}</td>
+                                    <td>{{d.address}}</td>
+                                    <td class=" d-flex justify-content-center align-content-center " *ngIf="api.checkPermissions(['update-client','delete-client'])">
+                                        <!-- <button type="button" class="sm green" (click)="edit(i)" >Edit</button> -->
+                                        <div *ngIf="api.checkPermission('update-client')" class="px-2">
+                                            <i class="fa fa-edit" (click)="edit(i)"></i>
+                                        </div>
+
+                                        <!-- <button type="button" class="sm red" (click)="deletingIndex=i; deletePop=pop; selectedId=d.id" #pop="bs-popover" [popover]="deleteTemplate" placement="left" [outsideClick]="true">Delete</button> -->
+                                        <div *ngIf="api.checkPermission('delete-client')" class="px-2">
+                                            <i class="fa fa-trash" (click)="deletingIndex=i; deletePop=pop; selectedId=d.id" #pop="bs-popover" [popover]="deleteTemplate" placement="left" [outsideClick]="true"></i>
+                                        </div>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <ng-template #noDataFound>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="4">
+                                            <app-no-data-found></app-no-data-found>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </ng-template>
+                        </ng-container>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #deleteTemplate>
+    <p>Are you sure that you want to delete?</p>
+    <button class="xs black" (click)="deletePop.hide()">No</button>
+    <button class="xs red" (click)="deleteClient()" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Yes
+        <span></span><span></span><span></span>
+    </button>
+</ng-template>

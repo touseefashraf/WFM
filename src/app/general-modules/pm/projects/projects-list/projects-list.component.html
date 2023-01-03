@@ -1,0 +1,80 @@
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-1">
+        <div class="d-flex justify-content-end">
+            <button *ngIf="api.checkPermission('save-project')" [routerLink]="['/admin/projects/general-details']" routerLinkActive="router-link-active" class="green sm mb-2">Add Project</button>
+        </div>
+
+        <div class="card">
+            <h4 class="card-header">Projects List</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th style="width: 22%;">Title <br> Description</th>
+                                <th>Client</th>
+                                <th>Fee</th>
+                                <th>Recruiter</th>
+                                <th style="width: 112px;">Status</th>
+                                <th>Start Date</th>
+                                <th>Deadline</th>
+                                <th class="col-actions" *ngIf="api.checkPermissions(['update-project','delete-project'])">Action</th>
+                            </tr>
+                        </thead>
+                        <ng-container *ngIf="dataStatus == 'fetching'">
+                            <tbody [appSkeletonTabelLoader]="loaderOptions"></tbody>
+                        </ng-container>
+                        <ng-container *ngIf="dataStatus == 'done'">
+                            <tbody *ngIf="projectsList.length > 0; else noDataFound">
+                                <tr *ngFor="let row of projectsList; let i = index">
+                                    <td><strong>{{ row.title }}</strong><a class="repo_link" target="_blank" [href]="row.repo_link"><i class="fas fa-external-link-alt"></i></a> <br> {{ row.description }}</td>
+                                    <td>{{ row.client.first_name + ' ' + row.client.last_name }}</td>
+                                    <td>{{ row.fee_percentage }} &#37;</td>
+                                    <td>
+                                        <div [class]="'recruiter '+getRecruiterClass(row.recruiter)">{{ getRecruiter(row.recruiter) }}</div>
+                                    </td>
+                                    <td>
+                                        <div [class]="'status '+getStatusClass(row.status)">{{ getStatusFormat(row.status) }}</div>
+                                    </td>
+                                    <td>{{ row.start_date | date: 'MMM d, yyyy' }}</td>
+                                    <td>{{ row.deadline | date: 'mediumDate' }}</td>
+                                    <td *ngIf="api.checkPermissions(['update-project','delete-project'])">
+                                        <div class=" d-flex justify-content-center">
+                                            <div *ngIf="api.checkPermission('update-project')" class="px-2 edit">
+                                                <span>
+                                                    <a [routerLink]="['/'+userType+'/projects/general-details']" [queryParams]="{id: row.id}"><i class="fa fa-edit"></i></a>
+                                                </span>
+                                            </div>
+                                            <div *ngIf="api.checkPermission('delete-project')" class="px-2 danger">
+                                                <i class="fa fa-trash" (click)="confirmingModal(deleteTemplate, row.id,i)"></i>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <ng-template #noDataFound>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="8">
+                                            <app-no-data-found></app-no-data-found>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </ng-template>
+                        </ng-container>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #deleteTemplate>
+    <div class="modal-body text-center">
+        <p>Are you sure to delete?</p>
+        <button type="button" class="sm green" (click)="modalRef.hide()">No</button>
+        <button type="button" class="sm red" (click)="delete()" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Yes
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</ng-template>

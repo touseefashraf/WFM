@@ -1,0 +1,29 @@
+.edit {
+    color: #007bff;
+    cursor: pointer;
+}
+
+.danger {
+    color: red;
+    cursor: pointer;
+}
+
+thead tr th {
+    text-align: center;
+}
+
+tbody tr .text-right {
+    text-align: right;
+}
+
+tbody tr .text-center {
+    text-align: center;
+}
+
+.i-badge {
+    width: 120px;
+}
+
+.p-detail {
+    width: 138px;
+}

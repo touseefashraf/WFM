@@ -1,0 +1,95 @@
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-1">
+        <div class="d-flex justify-content-end">
+            <h4></h4>
+            <button *ngIf="api.checkPermission('add-increment-type')" class="green sm mb-2" (click)="openModal(addForm, -1)">Add increment Type</button>
+        </div>
+        <div class="card">
+            <h4 class="card-header">Increment Types</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th class="text-center" *ngIf="api.checkPermissions(['update-increment-type','delete-increment-type'])">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="dataList.length > 0">
+                            <tr *ngFor="let d of dataList; let i = index">
+                                <td>{{ d.name}}</td>
+                                <td>{{ d.description }}</td>
+                                <td class=" d-flex justify-content-center" *ngIf="api.checkPermissions(['update-increment-type','delete-increment-type'])">
+                                    <div *ngIf="api.checkPermission('update-increment-type')" class="image-upload">
+                                        <label for="file-input" (click)="openModal(addForm,i)">
+                                            <span class="themeCol2"><i class="fa fa-edit"></i></span>
+                                        </label>
+                                    </div>
+                                    <div *ngIf="api.checkPermission('delete-increment-type')" class="px-3 danger">
+                                        <i class="fa fa-trash" (click)="confirmingModal(incrementConfirming, d.id,i)"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody *ngIf="dataList.length == 0 && dataStatus">
+                            <tr>
+                                <td colspan="3">
+                                    <app-no-data-found></app-no-data-found>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <!-- <tbody *ngIf="!dataStatus">
+                            <tr>
+                                <td colspan="3">
+                                    <app-no-data-found></app-no-data-found>
+                                </td>
+                            </tr>
+                        </tbody> -->
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #addForm>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Add Increment type</h4>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="dataForm" (ngSubmit)="save(dataForm, f)" #f="ngForm">
+            <div class="row">
+                <div class="col-md-6 mb-1">
+                    <label class="mb-0">Name <span class="mendatory">*</span></label>
+                    <input formControlName="name" class="form-control mt-0" placeholder="Enter Name" [ngClass]="{'form-submitted': f.submitted}">
+                    <div *ngIf="ui.checkErrors(g.name, f)" class="errors">
+                        <p *ngIf="g.name.errors.required">Name is required</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-1">
+                    <label class="mb-0">Description<span class="mendatory">*</span></label>
+                    <input formControlName="description" class="form-control mt-0" placeholder="Enter description" [ngClass]="{'form-submitted': f.submitted}">
+                    <div *ngIf="ui.checkErrors(g.description, f)" class="errors">
+                        <p *ngIf="g.description.errors.required">Description is required</p>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="red sm m-1" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">save
+                <span></span><span></span><span></span>
+            </button>
+            <button type="button" class="black sm ml-1" (click)="cancelButton(f)">Cancel</button>
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #incrementConfirming>
+    <div class="modal-body text-center">
+        <p>Do you want to Delete?</p>
+        <button type="button" class="sm black" (click)="modalRef.hide()">No</button>
+        <button type="button" class="sm green" (click)="delete()" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Yes
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</ng-template>

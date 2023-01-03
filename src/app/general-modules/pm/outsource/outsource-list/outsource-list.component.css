@@ -1,0 +1,12 @@
+.themeCol2 {
+    color: orange
+  }
+
+  .themeCol3 {
+    color: rgb(15, 15, 170)
+  }
+
+  .danger {
+    color: red;
+    cursor: pointer;
+  }

@@ -1,0 +1,85 @@
+<app-steps [step]="'projects-document'"></app-steps>
+<div class="container-fluid justify-content-center mt-3">
+    <div class="">
+        <div class="row">
+            <div class="col-md-12 drag-drop-container">
+                <input #inputField type="file" style="display: none;" id="other-files" (change)="onDocumentChange($event)" multiple>
+                <div class="images-containers-wrapper">
+                    <div class="images-container">
+                        <div class="main" *ngIf="uploadedFiles.length > 0">
+                            <div class="main-text">
+                                <p>Projects Document</p>
+                                <p>These files will be displayed as projects documents</p>
+                            </div>
+                            <div class="img-loading" (dragover)="fileDragStart($event)" (dragenter)="fileDragStart($event)" (dragleave)="fileDragEnd($event)" (drop)="fileDropped($event)">
+                                <div class="content-box" *ngFor=" let file of uploadedFiles; let i=index">
+                                    <ng-container *ngIf="file.uploading">
+                                        <!-- <p>spinner while upload</p> -->
+                                        <div class="loading">
+                                            <img src="/assets/images/spinner.svg" alt="">
+                                            <p>uploading Files</p>
+                                        </div>
+                                    </ng-container>
+                                    <ng-container *ngIf="file.deletion">
+                                        <!-- <p>spinner while upload</p> -->
+                                        <div class="loading">
+                                            <img src="/assets/images/spinner.svg" alt="">
+                                            <p>Deleting Files</p>
+                                        </div>
+                                    </ng-container>
+                                    <ng-container *ngIf="!file.uploading && !file.deletion">
+                                        <div class="d-flex flex-row file-info position">
+                                            <div class="loaded-img">
+                                                <div class="side-img">
+                                                    <i style="font-size: 86px;" [class]="getFileIcon(file.extension)"></i>
+                                                </div>
+                                                <div class="side-area">
+                                                    <div class="img-name">
+                                                        <p>{{file.name}} #{{i+1}}</p>
+                                                        <p>{{(file.size/1024) | number}} KB</p>
+                                                    </div>
+                                                    <div class="btns">
+                                                        <button type="button" (click)="getProjectFile(file.id, file)"><i class="fas fa-download"></i></button>
+                                                        <button type="button" (click)="deleteFile(i)"><i class="far fa-trash-alt"></i></button>
+                                                        <ng-container *ngIf="file.extension === 'pdf' || file.extension === 'png' || file.extension === 'jpg'">
+                                                            <a target="_blank" [href]="viewProjectFile(file.id)">
+                                                                <button type="button">
+                                                                    <i class="fa fa-eye"></i>
+                                                                </button>
+                                                            </a>
+                                                        </ng-container>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </div>
+                                <div style="width: 100%; margin-top: 70px;"></div>
+                                <div class="drag-bar">
+                                    <p><i style="margin:0px 10px;" class="fas fa-cloud-upload-alt"></i>Drag files here to upload</p>
+                                    <button class="btn-wh" type="button" (click)="browseFiles($event)" style="width: 174px">Choose Files</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="upload-images-container" *ngIf="uploadedFiles.length === 0">
+                            <div class="main">
+                                <div class="main-text">
+                                    <p>Projects Document</p>
+                                    <p>These files will be displayed as projects documents</p>
+                                </div>
+                            </div>
+                            <div class="img-box" (dragover)="fileDragStart($event)" (dragenter)="fileDragStart($event)" (dragleave)="fileDragEnd($event)" (drop)="fileDropped($event)">
+                                <i style="font-size: 60px;" class="far fa-images"></i>
+                                <p>Drag and Drop files here</p>
+                                <p>or</p>
+                                <button class="btn" type="button" (click)="browseFiles($event)">Choose Files</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="red sm mb-2" (click)="goToBack()">Back</button>
+                <button type="button" class="blue sm mb-2" (click)="goToNext()">Next</button>
+            </div>
+        </div>
+    </div>
+</div>

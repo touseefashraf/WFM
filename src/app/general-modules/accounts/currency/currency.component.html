@@ -1,0 +1,120 @@
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-1">
+        <div class="d-flex justify-content-end">
+            <button *ngIf="api.checkPermission('add-currency')" class="green sm mb-2" (click)="openModal(newEntry, -1)">Add Currency</button>
+        </div>
+        <div class="card">
+            <h4 class="card-header">Currency</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Full Name</th>
+                                <th>Short Name</th>
+                                <th>Country</th>
+                                <th>Currency Rate</th>
+                                <th class="text-center" *ngIf="api.checkPermissions(['update-currency','delete-currency'])">Actions</th>
+                            </tr>
+                        </thead>
+                        <ng-container *ngIf="dataStatus == 'fetching'">
+                            <tbody [appSkeletonTabelLoader]="loaderOptions"></tbody>
+                        </ng-container>
+                        <ng-container *ngIf="dataStatus == 'done'">
+                            <tbody *ngIf="dbData.length > 0; else noDataFound">
+                                <tr *ngFor="let d of dbData; let i = index">
+                                    <td>{{d.full_name}} </td>
+                                    <td>{{d.short_name}} </td>
+                                    <td>{{d.country}} </td>
+                                    <td>{{d.conversion_rate | mask: 'separator':','}} </td>
+                                    <td class="d-flex justify-content-center align-content-center">
+                                        <div *ngIf="api.checkPermission('update-currency')" class="px-2">
+                                            <i class="fa fa-edit" (click)="openModal(newEntry,i)"></i>
+                                        </div>
+                                        <div *ngIf="api.checkPermission('delete-currency')" class="px-2">
+                                            <i class="fa fa-trash" (click)="selectedIndex=i; deletePop=pop; selectedId=d.id" #pop="bs-popover" [popover]="deleteTemplate" placement="left" [outsideClick]="true"></i>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <ng-template #noDataFound>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="4">
+                                            <app-no-data-found></app-no-data-found>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </ng-template>
+                        </ng-container>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<ng-template #newEntry>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Add Currency</h4>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="addEditForm" #f="ngForm">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6 mb-1">
+                            <label class="mb-0">Full Name:<span class="mendatory">*</span></label>
+                            <input formControlName="full_name" type="text" class="form-control mt-0" placeholder="Enter Full Name" [ngClass]="{'form-submitted': f.submitted}">
+                            <div *ngIf="ui.checkErrors(g.full_name, f)" class="errors">
+                                <p *ngIf="g.full_name.errors.required">Full Name is required</p>
+                                <p *ngIf="g.full_name.errors.maxlength">Full Name should be 100 Characters</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-1">
+                            <label class="mb-0">Short Name:<span class="mendatory">*</span></label>
+                            <input formControlName="short_name" type="text" class="form-control mt-0" placeholder="Enter Short Name" [ngClass]="{'form-submitted': f.submitted}">
+                            <div *ngIf="ui.checkErrors(g.short_name, f)" class="errors">
+                                <p *ngIf="g.short_name.errors.required">Short Name is required</p>
+                                <p *ngIf="g.short_name.errors.maxlength">Short Name should be 100 Characters</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-1">
+                            <label class="mb-0">Country:<span class="mendatory">*</span></label>
+                            <input formControlName="country" type="text" class="form-control mt-0" placeholder="Enter Country" [ngClass]="{'form-submitted': f.submitted}">
+                            <div *ngIf="ui.checkErrors(g.country, f)" class="errors">
+                                <p *ngIf="g.country.errors.required">Country is required</p>
+                                <p *ngIf="g.country.errors.maxlength">Country should be 100 Characters</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-1">
+                            <label class="mb-0">Rate:<span class="mendatory">*</span></label>
+                            <input formControlName="conversion_rate" type="text" mask="separator.2" thousandSeparator="," class="form-control mt-0" placeholder="Enter Conversion Rate" [ngClass]="{'form-submitted': f.submitted}">
+                            <div *ngIf="ui.checkErrors(g.conversion_rate, f)" class="errors">
+                                <p *ngIf="g.conversion_rate.errors.required">Conversion is required</p>
+                                <p *ngIf="g.conversion_rate.errors.maxlength">Conversion should be 7 Characters</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" appSmartClick (smartClick)="save(f)" class="green sm m-1" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">save
+                <span></span><span></span><span></span>
+            </button>
+            <button type="button" class="red sm ml-1" (click)="cancelButton(f)">Cancel</button>
+
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #deleteTemplate>
+    <p>Are you sure that you want to delete?</p>
+    <button class="xs black" (click)="deletePop.hide()">No</button>
+    <button class="xs red" (click)="delete()" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Yes
+        <span></span><span></span><span></span>
+    </button>
+</ng-template>

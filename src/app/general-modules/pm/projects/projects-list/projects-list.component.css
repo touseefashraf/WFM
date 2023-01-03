@@ -1,0 +1,28 @@
+.edit {
+    color: orange;
+    cursor: pointer;
+    /* padding: 2px; */
+}
+
+.danger {
+    color: red;
+    cursor: pointer;
+    /* padding: 2px; */
+}
+
+.table td {
+    position: relative;
+}
+
+td .repo_link {
+    position: absolute;
+    right: 10px;
+}
+
+.recruiter {
+    width: 35px;
+}
+
+.status {
+    width: 80px;
+}

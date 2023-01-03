@@ -1,0 +1,311 @@
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-1">
+        <div class="d-flex justify-content-end">
+            <button class="green sm mb-2" (click)="openModal(newEntry,-1)">Add New Lead</button>
+        </div>
+        <div class="card">
+            <h4 class="card-header">Project Leads</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Project Title</th>
+                                <th>Client Name</th>
+                                <th>Budget</th>
+                                <th>Currency</th>
+                                <th class="text-center" *ngIf="api.checkPermissions(['update-lead','delete-lead','add-lead-followup','lead-followup-list'])">Actions</th>
+                            </tr>
+                        </thead>
+
+                        <ng-container *ngIf="dataStatus == 'fetching'">
+                            <tbody [appSkeletonTabelLoader]="loaderOptions"></tbody>
+                        </ng-container>
+                        <ng-container *ngIf="dataStatus == 'done'">
+                            <tbody *ngIf="leads.data.length > 0">
+
+                                <tr *ngFor="let l of leads.data; let i = index">
+                                    <td>{{i+1}} </td>
+                                    <td>{{l.project_title}} </td>
+                                    <td>{{l.client_name}}</td>
+                                    <td>{{l.budget | mask: 'separator':','}}</td>
+                                    <td>{{l.currency.full_name}}</td>
+                                    <td *ngIf="api.checkPermissions(['update-lead','delete-lead','add-lead-followup','lead-followup-list'])">
+                                        <div class="d-flex justify-content-center align-content-center">
+                                            <div *ngIf="api.checkPermission('update-lead') && l.project_id==0" class="px-2">
+                                                <i (click)="selectedIndex=i;selectedId=l.id;openModal(newEntry,i)" style="cursor: pointer;margin-top: 0px;" class="fa fa-edit"></i>
+                                            </div>
+                                            <div *ngIf="api.checkPermission('delete-lead') " class="px-2">
+                                                <i (click)="selectedIndex=i;selectedId=l.id;openModal(deleteTemplate,i)" style="cursor: pointer;margin-top: 0px;" class="fa fa-trash"></i>
+                                            </div>
+                                            <div *ngIf="api.checkPermission('add-lead-followup') && l.project_id==0" class="px-2">
+                                                <i (click)="selectedIndex=i;selectedId=l.id;openModalFollowUp(addLeadFollowup,i)" style="cursor: pointer;margin-top: 0px;" class="far fa-comment-alt"></i>
+                                            </div>
+                                            <div *ngIf="api.checkPermission('lead-followup-list') && l.project_id==0" class="px-2">
+                                                <a [routerLink]="['lead-details',l.id]"><i style="cursor: pointer;margin-top: 0px;" class="fas fa-info-circle"></i></a>
+                                            </div>
+                                        </div>
+                                        <div *ngIf="l.project_id==0" class="d-flex justify-content-center align-content-center">
+                                            <button class="green sm mb-2" (click)="openModalProject(convToProject,i)">Convert to Project</button>
+                                        </div>
+                                        <div *ngIf="l.project_id!=0" class="d-flex justify-content-center align-content-center">
+                                            <p>This Lead has been <br> converted to project</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <ng-template #noDataFound>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="6">
+                                            <app-no-data-found></app-no-data-found>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </ng-template>
+                        </ng-container>
+                    </table>
+                    <nav aria-label="Page navigation example" *ngIf="dataStatus == 'done'">
+                        <ul class="pagination justify-content-left  mt-3">
+                            <li class="page-item">
+                                <small *ngIf="page<10">Current Page: 0{{page}}</small>
+                                <small *ngIf="page>=10">Current Page: {{page}}</small>
+                            </li>
+                        </ul>
+                        <ul class="pagination justify-content-left">
+                            <li class="page-item" *ngIf="pagination.prev_page_url != null">
+                                <a class="page-link" href="javascript: void(0)" tabindex="-1" (click)="setPagination(page-1)">Previous</a>
+                            </li>
+                            <li class="page-item disabled" *ngIf="pagination.prev_page_url == null">
+                                <a class="page-link" href="javascript: void(0)" tabindex="-1">Previous</a>
+                            </li>
+                            <ng-container *ngIf="pagination.last_page <= 6">
+                                <ng-container *ngFor="let p of [].constructor(pagination.last_page); let i=index">
+                                    <li [class]="page==(i+1) ? 'page-item active' : 'page-item'">
+                                        <a class="page-link" href="javascript: void(0)" (click)="setPagination(i+1)">{{i+1}}</a>
+                                    </li>
+                                </ng-container>
+                            </ng-container>
+                            <ng-container *ngIf="pagination.last_page >= 7">
+                                <ng-container *ngFor="let p of [].constructor(pagination.last_page); let i=index">
+                                    <li *ngIf="i<4" [class]="page==(i+1) ? 'page-item active' : 'page-item'">
+                                        <a class="page-link" href="javascript: void(0)" (click)="setPagination(i+1)">{{i+1}}</a>
+                                    </li>
+                                    <li *ngIf="(pagination.last_page-i) == 3" [class]="page==(i+1) ? 'page-item active' : 'page-item'">
+                                        <a class="page-link">...</a>
+                                    </li>
+                                    <li *ngIf="(pagination.last_page-i)==1 || (pagination.last_page-i)==2" [class]="page==(i+1) ? 'page-item active' : 'page-item'">
+                                        <a class="page-link" href="javascript: void(0)" (click)="setPagination(i+1)">{{i+1}}</a>
+                                    </li>
+                                </ng-container>
+                            </ng-container>
+                            <li class="page-item" *ngIf="pagination.next_page_url != null">
+                                <a class="page-link" href="javascript: void(0)" tabindex="-1" (click)="setPagination(+page+1)">Next</a>
+                            </li>
+                            <li class="page-item disabled" *ngIf="pagination.next_page_url == null">
+                                <a class="page-link" href="javascript: void(0)" tabindex="-1">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #newEntry>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Add New Lead</h4>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="planForm" #f="ngForm">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Project Title:<span class="mendatory">*</span></label>
+                            <input formControlName="project_title" class="form-control" type="text" placeholder="Project Title Here">
+                            <div *ngIf="ui.checkErrors(g.project_title, f)" class="errors">
+                                <p *ngIf="g.project_title.errors.required">Please Enter Project title</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Project URL:<span class="mendatory">*</span></label>
+                            <input formControlName="project_url" class="form-control" type="text" placeholder="Project URL Here">
+                            <div *ngIf="ui.checkErrors(g.project_url, f)" class="errors">
+                                <p *ngIf="g.project_url.errors.required">Please enter project URL</p>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Budget:<span class="mendatory">*</span></label>
+                            <input formControlName="budget" class="form-control" type="text" mask="separator.0" thousandSeparator="," placeholder="Project Budget Here">
+                            <div *ngIf="ui.checkErrors(g.budget, f)" class="errors">
+                                <p *ngIf="g.budget.errors.required">Please enter project URL</p>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Currency ID:<span class="mendatory">*</span></label>
+                            <select formControlName="currency_id" class="form-control">
+                                <option [value]="null">Select Any</option>
+                                <option *ngFor="let currency of currencies;" [value]="currency.id">{{currency.short_name}}</option>
+                            </select>
+                            <div *ngIf="ui.checkErrors(g.currency_id, f)" class="errors">
+                                <p *ngIf="g.currency_id.errors.required">Currency is required</p>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Client Name:<span class="mendatory">*</span></label>
+                            <input formControlName="client_name" class="form-control" type="text" placeholder="Client Name">
+                            <div *ngIf="ui.checkErrors(g.client_name, f)" class="errors">
+                                <p *ngIf="g.client_name.errors.required">Please enter project URL</p>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Description:<span class="mendatory">*</span></label>
+                            <textarea formControlName="desc" class="form-control mt-0" placeholder="Short description here" [ngClass]="{'form-submitted': f.submitted}"></textarea>
+                            <div *ngIf="ui.checkErrors(g.desc, f)" class="errors">
+                                <p *ngIf="g.desc.errors.required">Description Required</p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" (click)="save(f);" class="green sm m-1" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Save
+                <span></span><span></span><span></span>
+            </button>
+            <button type="button" class="red sm ml-1" (click)="cancelButton(f)">Cancel</button>
+
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #addLeadFollowup>
+    <div *ngIf="api.checkPermission('add-lead-followup')" class="modal-header">
+        <h4 class="modal-title pull-left">Add Lead Follow up</h4>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="followForm" #u="ngForm">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Title:<span class="mendatory">*</span></label>
+                            <input formControlName="title" class="form-control" type="text" placeholder="Title Here">
+                            <div *ngIf="ui.checkErrors(c.title, u)" class="errors">
+                                <p *ngIf="c.title.errors.required">Please Enter title</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Followup Date:<span class="mendatory">*</span></label>
+                            <input formControlName="followup_date" class="form-control" type="text" bsDatepicker [bsConfig]="{ dateInputFormat: 'MMMM Do YYYY',adaptivePosition: true }">
+                            <div *ngIf="ui.checkErrors(c.followup_date, u)" class="errors">
+                                <p *ngIf="c.followup_date.errors.required">Please Select the follow-up date</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Follow-up Sattus:<span class="mendatory">*</span></label>
+                            <select formControlName="status" class="form-control">
+                                <option value="null">Select Status</option>
+
+                                <option *ngFor="let m of followUpStatuses" [value]="m.key">{{m.title}}</option>
+
+                            </select>
+
+                            <div *ngIf="ui.checkErrors(c.status, u)" class="errors">
+                                <p *ngIf="c.status.errors.required">Please Select the follow-up date</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Description:<span class="mendatory">*</span></label>
+                            <textarea formControlName="description" rows="5" class="form-control mt-0" placeholder="Short description here"></textarea>
+                            <div *ngIf="ui.checkErrors(c.description, u)" class="errors">
+                                <p *ngIf="c.description.errors.required">Description Required</p>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Response:<span class="mendatory">*</span></label>
+                            <textarea formControlName="response" rows="5" class="form-control mt-0" placeholder="Response here"></textarea>
+                            <div *ngIf="ui.checkErrors(c.response, u)" class="errors">
+                                <p *ngIf="c.response.errors.required">Response</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" (click)="saveFollowup(u);" class="green sm m-1" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Save
+                <span></span><span></span><span></span>
+            </button>
+            <button type="button" class="red sm ml-1" (click)="cancelButton(u)">Cancel</button>
+
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #convToProject>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Convert to Project</h4>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="toProjectForm" #f="ngForm">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Start Date:<span class="mendatory">*</span></label>
+                            <input formControlName="start_date" class="form-control" type="text" bsDatepicker [bsConfig]="{ dateInputFormat: 'MMMM Do YYYY',adaptivePosition: true }">
+                            <div *ngIf="ui.checkErrors(p.start_date, f)" class="errors">
+                                <p *ngIf="p.start_date.errors.required">Please Select the Start date</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Deadline:<span class="mendatory">*</span></label>
+                            <input formControlName="deadline" class="form-control" type="text" bsDatepicker [bsConfig]="{ dateInputFormat: 'MMMM Do YYYY',adaptivePosition: true }">
+                            <div *ngIf="ui.checkErrors(p.deadline, f)" class="errors">
+                                <p *ngIf="p.deadline.errors.required">Please Select the Deadline date</p>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Initial Budget:<span class="mendatory">*</span></label>
+                            <input formControlName="initial_budget" type="text" mask="separator.0" thousandSeparator="," max="100" min="0" class="form-control mt-0" placeholder="Enter Initial Budget" [ngClass]="{'form-submitted': f.submitted}">
+                            <div *ngIf="ui.checkErrors(p.initial_budget, f)" class="errors">
+                                <p *ngIf="p.initial_budget.errors.required">Budget is required</p>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" (click)="saveLeadToProject(f)" class="green sm m-1" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">save
+                <span></span><span></span><span></span>
+            </button>
+            <button type="button" class="red sm ml-1" (click)="cancel(f)">Cancel</button>
+
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #deleteTemplate>
+    <div class="modal-body">
+        <p>Are you sure that you want to delete?</p>
+        <div class="text-right">
+            <button class="xs black" (click)="cancelButtonNon()">No</button>
+            <button class="xs red" (click)="deleteEntry()" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Yes
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </div>
+</ng-template>

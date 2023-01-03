@@ -1,0 +1,115 @@
+<!-- <p>
+  attendance-log works!
+</p> -->
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-2">
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <label style="font-weight: 600;">Select Month and Year:</label>
+                <input class="form-control" type="text" [(ngModel)]="monthYear" bsDatepicker [bsConfig]="{minMode:'month',  adaptivePosition: true, dateInputFormat: 'MMMM YYYY' }">
+            </div>
+            <div class="col col d-flex align-items-end">
+                <label>&nbsp;</label>
+                <div class="btn-group" dropdown>
+                    <button type="button" style="margin: 0;" class="lg green" (click)="page = 1;search()" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Search
+                        <span></span><span></span><span></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <h4 class="card-header">Attendance log</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <!-- <th>Name</th> -->
+                                <th>Checkin Time</th>
+                                <th>Checkout Time</th>
+                                <th>Duration</th>
+                                <th>Date</th>
+
+                            </tr>
+                        </thead>
+                        <ng-container *ngIf="dataStatus == 'fetching'">
+                            <tbody [appSkeletonTabelLoader]="loaderOptions"></tbody>
+                        </ng-container>
+                        <ng-container *ngIf="dataStatus == 'done'">
+                            <tbody *ngIf="attendanceData.length > 0; else noDataFound">
+                                <tr *ngFor="let d of attendanceData; let i = index">
+                                    <!-- <td>
+                                        {{d.employee_id}}
+                                    </td> -->
+                                    <td>{{d.checkin | date:'shortTime'}}</td>
+                                    <td>{{d.checkout | date:'shortTime'}}</td>
+                                    <td *ngIf="d.hours > 1">{{(d.hours*1).toFixed(0) }} Hours</td>
+                                    <td *ngIf="d.hours < 1">{{(d.hours*60).toFixed(0)}} Minutes</td>
+                                    <td>{{d.date}}</td>
+                                </tr>
+                            </tbody>
+                        </ng-container>
+                        <ng-template #noDataFound>
+                            <tbody>
+                                <tr>
+                                    <td colspan="4">
+                                        <app-no-data-found></app-no-data-found>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </ng-template>
+                    </table>
+                    <nav aria-label="Page navigation example" *ngIf="dataStatus == 'done'">
+                        <ul class="pagination justify-content-left  mt-3">
+                            <li class="page-item">
+                                <small *ngIf="page<10">Current Page: 0{{page}}</small>
+                                <small *ngIf="page>=10">Current Page: {{page}}</small>
+                            </li>
+                        </ul>
+                        <ul class="pagination justify-content-left">
+                            <li class="page-item" *ngIf="pagination.prev_page_url != null">
+                                <a class="page-link" href="javascript: void(0)" tabindex="-1" (click)="setPagination(page-1)">Previous</a>
+                            </li>
+                            <li class="page-item disabled" *ngIf="pagination.prev_page_url == null">
+                                <a class="page-link" href="javascript: void(0)" tabindex="-1">Previous</a>
+                            </li>
+                            <ng-container *ngIf="pagination.last_page <= 6">
+
+                                <ng-container *ngFor="let p of [].constructor(pagination.last_page); let i=index">
+                                    <li [class]="page==(i+1) ? 'page-item active' : 'page-item'">
+                                        <a class="page-link" href="javascript: void(0)" (click)="setPagination(i+1)">{{i+1}}</a>
+                                    </li>
+                                </ng-container>
+
+                            </ng-container>
+
+                            <ng-container *ngIf="pagination.last_page >= 7">
+
+                                <ng-container *ngFor="let p of [].constructor(pagination.last_page); let i=index">
+                                    <li *ngIf="i<4" [class]="page==(i+1) ? 'page-item active' : 'page-item'">
+                                        <a class="page-link" href="javascript: void(0)" (click)="setPagination(i+1)">{{i+1}}</a>
+                                    </li>
+                                    <li *ngIf="(pagination.last_page-i) == 3" [class]="page==(i+1) ? 'page-item active' : 'page-item'">
+                                        <a class="page-link">...</a>
+                                    </li>
+                                    <li *ngIf="(pagination.last_page-i)==1 || (pagination.last_page-i)==2" [class]="page==(i+1) ? 'page-item active' : 'page-item'">
+                                        <a class="page-link" href="javascript: void(0)" (click)="setPagination(i+1)">{{i+1}}</a>
+                                    </li>
+                                </ng-container>
+
+                            </ng-container>
+
+                            <li class="page-item" *ngIf="pagination.next_page_url != null">
+                                <a class="page-link" href="javascript: void(0)" tabindex="-1" (click)="setPagination(+page+1)">Next</a>
+                            </li>
+                            <li class="page-item disabled" *ngIf="pagination.next_page_url == null">
+                                <a class="page-link" href="javascript: void(0)" tabindex="-1">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

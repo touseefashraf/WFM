@@ -1,0 +1,26 @@
+.clearfix {
+    display: block;
+    content: "";
+    clear: both;
+    width: 100%;
+}
+.cards {
+    display: flex;
+    flex-wrap: wrap;
+}
+.cards-body {
+    display: flex;
+    flex-direction: column;
+    /* padding: 1%; */
+    border: 1px solid #dee2e6;
+    flex: 0 44%;
+    margin-right: 2%;
+}
+.cards-body .card-title {
+    background-color: var(--ap-black);
+    color: honeydew;
+    font-family: "Baloo Bhaina 2", cursive;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 3px;
+}

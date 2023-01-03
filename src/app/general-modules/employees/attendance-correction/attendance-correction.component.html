@@ -1,0 +1,121 @@
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-1">
+        <div class="d-flex justify-content-end">
+            <button *ngIf="api.checkPermission('attendance-request')" class="green sm mb-2" (click)="openModal(newEntry)">Add New Request</button>
+        </div>
+        <div class="card">
+            <h4 class="card-header">Attendance Correction Requests</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Subject Date</th>
+                                <th>Check-In</th>
+                                <th>Check-Out</th>
+                                <th>Requested On</th>
+                                <th>Comments</th>
+                                <th>Status</th>
+                                <th class="text-center" *ngIf="api.checkPermission('delete-attendance-request')">Actions</th>
+                            </tr>
+                        </thead>
+                        <ng-container *ngIf="dataStatus == 'fetching'">
+                            <tbody [appSkeletonTabelLoader]="loaderOptions"></tbody>
+                        </ng-container>
+                        <ng-container *ngIf="dataStatus == 'done'">
+                            <tbody *ngIf="recentRequests.length > 0; else noDataFound">
+                                <tr *ngFor="let r of recentRequests; let i = index">
+                                    <td>{{r.id}} </td>
+                                    <td>{{moment(r.checkin).format('YYYY-MM-DD ')}} </td>
+                                    <td>{{moment(r.checkin).format('H:mm')}} </td>
+                                    <td>{{moment(r.checkout).format('H:mm')}} </td>
+                                    <td>{{moment(r.created_at).format('YYYY-MM-DD H:mm')}} </td>
+                                    <td>{{r.description}} </td>
+                                    <td>{{r.approval_status | uppercase}}</td>
+                                    <td class="d-flex justify-content-center align-content-center" *ngIf="api.checkPermission('delete-attendance-request')">
+                                        <div class="px-2">
+                                            <i (click)="selectedId=r.id;openModal(deleteTemplate)" class="fa fa-trash"></i>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <ng-template #noDataFound>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="7">
+                                            <app-no-data-found></app-no-data-found>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </ng-template>
+                        </ng-container>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<ng-template #newEntry>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Add New Request</h4>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="planForm" #f="ngForm">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Date:<span class="mendatory">*</span></label>
+                            <input formControlName="date" class="form-control" type="text" bsDatepicker [bsConfig]="{ dateInputFormat: 'MMMM Do YYYY',adaptivePosition: true }" [maxDate]="now">
+                            <div *ngIf="ui.checkErrors(g.date, f)" class="errors">
+                                <p *ngIf="g.date.errors.required">Please select a date</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Check In:<span class="mendatory">*</span></label>
+                            <timepicker class="time-custom" formControlName="checkin" [ngClass]="{'form-submitted': f.submitted}">
+                            </timepicker>
+                            <div *ngIf="ui.checkErrors(g.checkin, f)" class="errors">
+                                <p *ngIf="g.checkin.errors.required">Check In time is required</p>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Check Out:<span class="mendatory">*</span></label>
+                            <timepicker class="time-custom" formControlName="checkout" [ngClass]="{'form-submitted': f.submitted}">
+                            </timepicker>
+                            <div *ngIf="ui.checkErrors(g.checkout, f)" class="errors">
+                                <p *ngIf="g.checkout.errors.required">Check Out time is required</p>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Description:<span class="mendatory">*</span></label>
+                            <input formControlName="description" type="text" class="form-control mt-0" placeholder="Short description here" [ngClass]="{'form-submitted': f.submitted}">
+                            <div *ngIf="ui.checkErrors(g.description, f)" class="errors">
+                                <p *ngIf="g.description.errors.required">Description</p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" (click)="saveRequests(f)" class="green sm m-1" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Add
+                <span></span><span></span><span></span>
+            </button>
+            <button type="button" class="red sm ml-1" (click)="cancelButton(f)">Cancel</button>
+
+        </form>
+    </div>
+</ng-template>
+<ng-template #deleteTemplate>
+    <div class="modal-body">
+        <p>Are you sure that you want to delete?{{selectedId}}</p>
+        <button class="xs black" (click)="cancelButtonNon()">No</button>
+        <button class="xs red" (click)="deleteEntry()" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Yes
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</ng-template>

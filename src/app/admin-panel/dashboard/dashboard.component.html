@@ -1,0 +1,17 @@
+<!-- <h3 style="text-align: center;">This is Dashboard</h3> -->
+<ul class="nav nav-tabs mt-5">
+
+    <li *ngIf="api.checkPermission('bdm-dashboard')" [ngClass]="ds.activeMenu=='business'?'active':''" >
+        <a routerLink="business-development">Business Development Dashboard</a>
+    </li>
+
+    <li *ngIf="api.checkPermission('financial-dashboard')" [ngClass]="ds.activeMenu=='financial'?'active':''" >
+        <a routerLink="financial">Financial Dashboard</a>
+    </li>
+
+    <li *ngIf="api.checkPermission('pm-dashboard')" [ngClass]="ds.activeMenu=='project'?'active':''" >
+        <a routerLink="project-manager">Project Manager Dashboard</a>
+    </li>
+
+</ul>
+<router-outlet></router-outlet>

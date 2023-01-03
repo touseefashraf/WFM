@@ -1,0 +1,102 @@
+<div class="row justify-content-center mt-3">
+    <div class="col-md-11">
+        <h4 class="font-bold mb-3">Manage Out Source</h4>
+        <div class="">
+            <div class="">
+                <form [formGroup]="formFG" (ngSubmit)="save(formFG)" #f="ngForm" *ngIf="projectForm">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Type <span class="mendatory">*</span></label>
+                                        <select class="form-control" formControlName="type" [ngClass]="{'form-submitted': f.submitted}">
+                                            <option [value]="null">Select Option</option>
+                                            <option value="individual">Individual</option>
+                                            <option value="company">Company</option>
+                                        </select>
+                                        <div *ngIf="ui.checkErrors(g.type, f)" class="errors">
+                                            <p *ngIf="g.type.errors.required">Type is required</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Name <span class="mendatory">*</span></label>
+                                        <input type="text" class="form-control" formControlName="name" placeholder="Enter First Name" [ngClass]="{'form-submitted': f.submitted}" />
+                                        <div *ngIf="ui.checkErrors(g.name, f)" class="errors">
+                                            <p *ngIf="g.name.errors.required">Name is required</p>
+                                            <p *ngIf="g.name.errors.maxlength">Name should not exceeds {{ g.name.errors.maxlength.requiredLength }} characters</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Email <span class="mendatory">*</span></label>
+                                        <input type="text" class="form-control" formControlName="email" placeholder="Enter Email" [ngClass]="{'form-submitted': f.submitted}" />
+                                        <div *ngIf="ui.checkErrors(g.email, f)" class="errors">
+                                            <p *ngIf="g.email.errors.required">Email is required</p>
+                                            <p *ngIf="g.email.errors.maxlength">Email should not exceeds {{ g.email.errors.maxlength.requiredLength }} characters</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Mobile # <span class="mendatory">*</span></label>
+                                        <input type="text" class="form-control" formControlName="contact_1" placeholder="Enter Mobile #" [ngClass]="{'form-submitted': f.submitted}" />
+                                        <div *ngIf="ui.checkErrors(g.contact_1, f)" class="errors">
+                                            <p *ngIf="g.contact_1.errors.required">Mobile # is required</p>
+                                            <p *ngIf="g.contact_1.errors.maxlength">Mobile # should not exceeds {{ g.contact_1.errors.maxlength.requiredLength }} characters</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Phone # <span class="mendatory">*</span></label>
+                                        <input type="text" class="form-control" formControlName="contact_2" placeholder="Enter Phone #" [ngClass]="{'form-submitted': f.submitted}" />
+                                        <div *ngIf="ui.checkErrors(g.contact_2, f)" class="errors">
+                                            <p *ngIf="g.contact_2.errors.required">Phone # is required</p>
+                                            <p *ngIf="g.contact_2.errors.maxlength">Phone # should not exceeds {{ g.contact_2.errors.maxlength.requiredLength }} characters</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Skype <span class="mendatory">*</span></label>
+                                        <input type="text" class="form-control" formControlName="skype" placeholder="Enter Skype " [ngClass]="{'form-submitted': f.submitted}" />
+                                        <div *ngIf="ui.checkErrors(g.skype, f)" class="errors">
+                                            <p *ngIf="g.skype.errors.required">Skype ID is required</p>
+                                            <p *ngIf="g.skype.errors.maxlength">Skype ID should not exceeds {{ g.skype.errors.maxlength.requiredLength }} characters</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Description <span class="mendatory">*</span></label>
+                                        <textarea rows="5" class="form-control" formControlName="description" placeholder="Enter Description" [ngClass]="{'form-submitted': f.submitted}"></textarea>
+                                        <div *ngIf="ui.checkErrors(g.description, f)" class="errors">
+                                            <p *ngIf="g.description.errors.required">Description is required</p>
+                                            <p *ngIf="g.description.errors.maxlength">Description should not exceeds {{ g.description.errors.maxlength.requiredLength }} characters</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="center-txt">
+                        <button type="submit" class="blue" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Save
+                            <span></span><span></span><span></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>

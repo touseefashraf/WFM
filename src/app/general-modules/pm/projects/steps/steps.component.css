@@ -1,0 +1,77 @@
+.headbar {
+    overflow: hidden;
+    background-color: rgb(189, 189, 189);
+    margin: -10px -20px 50px -20px;
+}
+
+ul#progressbar {
+    padding-inline-start: 0;
+}
+
+#progressbar li {
+    width: 170px;
+    height: 75px;
+    line-height: 45px;
+    display: block;
+    font-size: 20px;
+    color: #ffffff;
+    background: #0b7caf;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    margin: 0 0px 0px 20px;
+    padding: 2px 0 0 0;
+    cursor: pointer;
+    float: left;
+    text-align: center;
+    list-style-type: none;
+}
+#progressbar li p {
+    color: #ffffff;
+    font-size: 14px;
+    margin: -2px 0 0 0;
+    line-height: 1;
+}
+#progressbar li i {
+    color: #ffffff;
+}
+
+#progressbar li.active {
+    color: #0b7caf;
+    background: #ffffff;
+    /* margin: 0 0 0 20px; */
+}
+#progressbar li.active p,
+#progressbar li.active i {
+    color: #0b7caf;
+}
+
+#progressbar #projectDetails:before {
+    font-family: FontAwesome;
+    content: "\f46d";
+    font-size: 27px;
+}
+
+#progressbar #projectsDocument:before {
+    font-family: FontAwesome;
+    content: "\f15c";
+    font-size: 27px;
+}
+
+#progressbar #projectMilestones:before {
+    font-family: FontAwesome;
+    content: "\f091";
+    font-size: 27px;
+}
+
+#progressbar #projectCredentials:before {
+    font-family: FontAwesome;
+    content: "\f084";
+    font-size: 27px;
+}
+
+@media only screen and (max-width: 1024px) {
+    #progressbar li {
+        width: 145px;
+        margin: 0px 0px 0px 20px;
+    }
+}

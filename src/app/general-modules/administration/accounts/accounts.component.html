@@ -1,0 +1,133 @@
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-1">
+        <div class="d-flex justify-content-end">
+            <button class="green sm mb-2" (click)="openModal(addEdit,-1)">Add New Account</button>
+        </div>
+        <div class="card">
+            <h4 class="card-header">Company Accounts</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>S#</th>
+                                <th>Account Title</th>
+                                <th>Account Type</th>
+                                <th>Account No</th>
+                                <th>Branch Code</th>
+                                <th>Bank Name</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+
+                        <ng-container *ngIf="dataStatus == 'fetching'">
+                            <tbody [appSkeletonTabelLoader]="loaderOptions"></tbody>
+                        </ng-container>
+                        <ng-container *ngIf="dataStatus == 'done'">
+                            <tbody *ngIf="this.accounts.length > 0">
+
+                                <tr *ngFor="let account of this.accounts; let i = index">
+                                    <td>{{i+1}} </td>
+                                    <td>{{account.title}} </td>
+                                    <td>{{account.type}}</td>
+                                    <td>{{account.account_no}}</td>
+                                    <td>{{account.branch_code}}</td>
+                                    <td>{{account.bank.full_name}}</td>
+                                    <td class="d-flex justify-content-center align-content-center">
+                                        <div class="px-2">
+                                            <i (click)="openModal(addEdit,i)" style="cursor: pointer;margin-top: 0px;" class="fa fa-edit"></i>
+                                        </div>
+                                        <div class="px-2">
+                                            <i (click)="confirmingModal(deleteTemplate,i)" style="cursor: pointer;margin-top: 0px;" class="fa fa-trash"></i>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <ng-template #noDataFound>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="4">
+                                            <app-no-data-found></app-no-data-found>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </ng-template>
+                        </ng-container>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #addEdit>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Add New Account </h4>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="accountForm" #f="ngForm">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Account Type:<span class="mendatory">*</span></label>
+                            <select formControlName="type" class="form-control">
+                                <option [value]="null">Select Any</option>
+                                <option *ngFor="let type of cs.BANK_TYPE;" [value]="type.key">{{type.name}}</option>
+                            </select>
+                            <div *ngIf="ui.checkErrors(g.type, f)" class="errors">
+                                <p *ngIf="g.type.errors.required">Currency is required</p>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Bank:<span class="mendatory">*</span></label>
+                            <select formControlName="bank_id" class="form-control">
+                                <option [value]="null">Select Any</option>
+                                <option *ngFor="let bank of bankList;" [value]="bank.id">{{bank.full_name}}</option>
+                            </select>
+                            <div *ngIf="ui.checkErrors(g.bank_id, f)" class="errors">
+                                <p *ngIf="g.bank_id.errors.required">Currency is required</p>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Account Title:<span class="mendatory">*</span></label>
+                            <input formControlName="title" class="form-control" type="text" placeholder="Account Title Here">
+                            <div *ngIf="ui.checkErrors(g.title, f)" class="errors">
+                                <p *ngIf="g.title.errors.required">Please Enter Account title</p>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Account No:<span class="mendatory">*</span></label>
+                            <input formControlName="account_no" class="form-control" type="text" placeholder="Account No">
+                            <div *ngIf="ui.checkErrors(g.account_no, f)" class="errors">
+                                <p *ngIf="g.account_no.errors.required">Please enter Account No</p>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Branch Code:<span class="mendatory">*</span></label>
+                            <input formControlName="branch_code" class="form-control" type="text" placeholder="Branch Code">
+                            <div *ngIf="ui.checkErrors(g.branch_code, f)" class="errors">
+                                <p *ngIf="g.branch_code.errors.required">Please enter Branch Code</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" (click)="save(f);" class="green sm m-1" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Save
+                <span></span><span></span><span></span>
+            </button>
+            <button type="button" class="red sm ml-1" (click)="cancelButton(f)">Cancel</button>
+
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #deleteTemplate>
+    <div class="modal-body text-center">
+        <p>Do you want to Delete?</p>
+        <button type="button" class="sm black" (click)="cancelButton()">No</button>
+        <button type="button" class="sm green" (click)="deleteEntry()" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Yes
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</ng-template>

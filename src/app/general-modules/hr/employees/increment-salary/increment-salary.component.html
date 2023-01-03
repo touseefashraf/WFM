@@ -1,0 +1,96 @@
+<!-- <p>
+    increment-salary works!
+</p> -->
+
+<div class="modal-header">
+    <h4 class="modal-title pull-left">Increament Salary</h4>
+</div>
+<div class="modal-body">
+    <form [formGroup]="increamnetSalaryForm" #f="ngForm">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Employee<span class="mendatory">*</span></label>
+                            <select formControlName="employee_id" class="fadeIn" [ngClass]="{'form-submitted': f.submitted}">
+                                <option disabled [value]="null">Select Employee</option>
+                                <option *ngFor="let e of employeesList" [value]="e.id">{{e.user.first_name}} {{e.user.last_name}}</option>
+                            </select>
+                            <div *ngIf="ui.checkErrors(g.employee_id , f)" class="errors">
+                                <p *ngIf="g.employee_id.errors.required">Employee is required</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Increment Type<span class="mendatory">*</span></label>
+                            <select formControlName="increment_type_id" class="fadeIn" [ngClass]="{'form-submitted': f.submitted}">
+                                <option disabled [value]="null">Select Increment Type</option>
+                                <option *ngFor="let i of incrementTypeList" [value]="i.id">{{i.name}}</option>
+                            </select>
+                            <div *ngIf="ui.checkErrors(g.increment_type_id , f)" class="errors">
+                                <p *ngIf="g.increment_type_id.errors.required">Increment type is required</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Amount <span class="mendatory">*</span></label>
+                            <input formControlName="amount" type="text" mask="separator.0" thousandSeparator="," class="form-control" placeholder="Enter a amount" [ngClass]="{'form-submitted': f.submitted}">
+                            <div *ngIf="ui.checkErrors(g.amount , f)" class="errors">
+                                <p *ngIf="g.amount.errors.required">Amount is required</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Start Month <span class="mendatory">*</span></label>
+                            <select formControlName="start_month" class="fadeIn" class="form-control" [ngClass]="{'form-submitted': f.submitted}">
+                                <option disabled [value]="null">Select Start Month</option>
+                                <option value="1">January</option>
+                                <option value="2">February</option>
+                                <option value="3">March</option>
+                                <option value="4">April</option>
+                                <option value="5">May</option>
+                                <option value="6">June</option>
+                                <option value="7">July</option>
+                                <option value="8">August</option>
+                                <option value="9">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                            </select>
+                            <div *ngIf="ui.checkErrors(g.start_month , f)" class="errors">
+                                <p *ngIf="g.start_month.errors.required">Start Month is required</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Start Year <span class="mendatory">*</span></label>
+                            <input type="number" min="0" formControlName="start_year" class="form-control" placeholder="Enter a start month" [ngClass]="{'form-submitted': f.submitted}">
+                            <div *ngIf="ui.checkErrors(g.start_year , f)" class="errors">
+                                <p *ngIf="g.start_year.errors.required">Start year is required</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Description <span class="mendatory">*</span></label>
+                            <input type="text" formControlName="description" class="form-control" placeholder="Enter a description" [ngClass]="{'form-submitted': f.submitted}">
+                            <div *ngIf="ui.checkErrors(g.description , f)" class="errors">
+                                <p *ngIf="g.description.errors.required">Description is required</p>
+                                <p *ngIf="g.description.errors.maxlength">Description should not exceeds from 1000 characters</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="submit" appSmartClick (smartClick)="save(f)" class="green sm m-1" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">save
+            <span></span><span></span><span></span>
+        </button>
+        <button type="button" class="red sm ml-1" (click)="api.IncrementSalaryModalRef.hide()">Cancel</button>
+    </form>
+</div>

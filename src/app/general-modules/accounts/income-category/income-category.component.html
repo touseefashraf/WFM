@@ -1,0 +1,102 @@
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-1">
+        <div class="d-flex justify-content-end">
+            <button *ngIf="api.checkPermission('add-income-category')" class="green sm mb-2" (click)="openModal(addForm, -1)">Add Income Category</button>
+        </div>
+        <div class="card">
+            <h4 class="card-header">Income Categories</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th class="text-center" *ngIf="api.checkPermissions(['update-income-category','delete-income-category'])">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="dataStatus == 'done'">
+                            <tr *ngFor="let d of dataList; let i = index">
+                                <td>{{ d.title }}</td>
+                                <td>{{ d.description }}</td>
+                                <td class=" d-flex justify-content-center" *ngIf="api.checkPermissions(['update-income-category','delete-income-category'])">
+                                    <div *ngIf="api.checkPermission('update-income-category')" class="image-upload">
+                                        <label for="file-input" (click)="openModal(addForm,i)">
+                                            <span ><i class="fa fa-edit"></i></span>
+                                        </label>
+                                    </div>
+                                    <div *ngIf="api.checkPermission('delete-income-category')" class="px-3 danger">
+                                        <i class="fa fa-trash" (click)="confirmingModal(AmenityConfirming, d.id,i)"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+
+                        <ng-container *ngIf="dataStatus == 'fetching'">
+                            <tbody [appSkeletonTabelLoader]="loaderOptions"></tbody>
+                        </ng-container>
+                        <ng-container *ngIf="dataStatus == 'noData'">
+                            <tbody>
+                                <tr>
+                                    <td colspan="3">
+                                        <app-no-data-found></app-no-data-found>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </ng-container>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #addForm>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Add Income Category</h4>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="dataForm" (ngSubmit)="save(dataForm, f)" #f="ngForm">
+            <div class="row">
+                <div class="col-md-12 mb-1">
+                    <label class="mb-0">title <span class="mendatory">*</span></label>
+                    <input formControlName="title" class="form-control mt-0" placeholder="Enter Title" [ngClass]="{'form-submitted': f.submitted}">
+                    <div *ngIf="ui.checkErrors(g.title, f)" class="errors">
+                        <p *ngIf="g.title.errors.required">Title is required</p>
+                    </div>
+                </div>
+
+
+
+                <div class="col-md-12 mb-1">
+                    <label class="mb-0">description <span class="mendatory">*</span></label>
+                    <textarea rows="5" formControlName="description" autocomplete="off" class="form-control mt-0" placeholder="Description" [ngClass]="{'form-submitted': f.submitted}"></textarea>
+                    <!-- <div *ngIf="ui.checkErrors(g.email, f)" class="errors">
+                  <p *ngIf="g.email.errors.required">Email is required</p>
+              </div> -->
+                </div>
+
+
+
+
+
+            </div>
+
+            <button type="submit" class="red sm m-1" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Save
+                <span></span><span></span><span></span>
+            </button>
+            <button type="button" class="black sm ml-1" (click)="cancelButton(f)">Cancel</button>
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #AmenityConfirming>
+    <div class="modal-body text-center">
+        <p>Do you want to Delete?</p>
+        <button type="button" class="sm black" (click)="modalRef.hide()" (click)="resetIndex()">No</button>
+        <button type="button" class="sm green" (click)="delete()" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Yes
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</ng-template>

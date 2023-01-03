@@ -1,0 +1,239 @@
+<app-steps-template [step]="'personal-info'"></app-steps-template>
+<div class="row justify-content-center">
+    <div class="col-md-11">
+
+                <form [formGroup]="formFG" (ngSubmit)="save(formFG)" #f="ngForm" *ngIf="employeeForm">
+
+                    <div class="button-box">
+                        <button type="button" class="red" [routerLink]="['/admin/employees/list']" routerLinkActive="router-link-active">Goto List</button>
+                        <button type="submit" class="green" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Save & Next
+                            <span></span><span></span><span></span>
+                        </button>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Title <span class="mendatory">*</span></label>
+                                        <select class="form-control" formControlName="title" [ngClass]="{'form-submitted': f.submitted}">
+                                            <option [value]="null">Select Option</option>
+                                            <option value="Miss">Miss</option>
+                                            <option value="Ms">Ms</option>
+                                            <option value="Mrs">Mrs</option>
+                                            <option value="Mr">Mr</option>
+                                        </select>
+                                        <div *ngIf="ui.checkErrors(g.title, f)" class="errors">
+                                            <p *ngIf="g.title.errors.required">Title is required</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>First Name <span class="mendatory">*</span></label>
+                                        <input type="text" class="form-control" formControlName="first_name" placeholder="Enter First Name" [ngClass]="{'form-submitted': f.submitted}" />
+                                        <div *ngIf="ui.checkErrors(g.first_name, f)" class="errors">
+                                            <p *ngIf="g.first_name.errors.required">First Name is required</p>
+                                            <p *ngIf="g.first_name.errors.maxlength">First Name should not exceeds {{ g.first_name.errors.maxlength.requiredLength }} characters</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Last Name <span class="mendatory">*</span></label>
+                                        <input type="text" class="form-control" formControlName="last_name" placeholder="Enter Last Name" [ngClass]="{'form-submitted': f.submitted}" />
+                                        <div *ngIf="ui.checkErrors(g.last_name, f)" class="errors">
+                                            <p *ngIf="g.last_name.errors.required">Last Name is required</p>
+                                            <p *ngIf="g.last_name.errors.maxlength">Last Name should not exceeds {{ g.last_name.errors.maxlength.requiredLength }} characters</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Gender <span class="mendatory">*</span></label>
+                                        <select class="form-control" formControlName="gender" [ngClass]="{'form-submitted': f.submitted}">
+                                            <option value="null">Select Gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                        </select>
+                                        <div *ngIf="ui.checkErrors(g.gender, f)" class="errors">
+                                            <p *ngIf="g.gender.errors.required">Gender is required</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+
+                                        <label>Date of birth <span class="mendatory">*</span></label>
+                                        <input type="text" class="form-control" formControlName="dob" placeholder="Enter Date of birth" [ngClass]="{'form-submitted': f.submitted}" bsDatepicker [bsConfig]="{ adaptivePosition: true, dateInputFormat: 'dddd, MMMM DD, YYYY' }" />
+                                        <div *ngIf="ui.checkErrors(g.dob, f)" class="errors">
+                                            <p *ngIf="g.dob.errors.required">Date of birth is required</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>User Type <span class="mendatory">*</span></label>
+                                        <select class="form-control" formControlName="user_type" [ngClass]="{'form-submitted': f.submitted}">
+                                            <option value="null">Select User Type</option>
+                                            <option value="manager">Manager</option>
+                                            <option value="employee">Employee</option>
+                                            <option value="hr">HR</option>
+                                        </select>
+
+                                        <div *ngIf="ui.checkErrors(g.user_type, f)" class="errors">
+                                            <p *ngIf="g.user_type.errors.required">User type is required</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Designation <span class="mendatory">*</span></label>
+                                        <select class="form-control" formControlName="designation_id" [ngClass]="{'form-submitted': f.submitted}">
+                                            <option disabled [value]="null">Select Value</option>
+                                            <option [value]="d.id" *ngFor="let d of designationList">{{d.title}}</option>
+                                        </select>
+                                        <div *ngIf="ui.checkErrors(g.designation_id, f)" class="errors">
+                                            <p *ngIf="g.designation_id.errors.required">Designation is required</p>
+                                            <p *ngIf="g.designation_id.errors.maxlength">Designation should not exceeds {{ g.designation_id.errors.maxlength.requiredLength }} characters</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Experience <span class="mendatory">*</span></label>
+                                        <input type="number" min="0" class="form-control" formControlName="experience" placeholder="Enter Experience" [ngClass]="{'form-submitted': f.submitted}" />
+                                        <div *ngIf="ui.checkErrors(g.experience, f)" class="errors">
+                                            <p *ngIf="g.experience.errors.required">Experience is required</p>
+                                            <p *ngIf="g.experience.errors.maxlength">Experience should not exceeds {{ g.designation.errors.maxlength.requiredLength }} characters</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Email <span class="mendatory">*</span></label>
+                                        <input *ngIf="this.employeeId == -1" type="text" class="form-control" formControlName="email" placeholder="Enter Email" [ngClass]="{'form-submitted': f.submitted}" />
+                                        <input *ngIf="this.employeeId > -1" disabled type="text" class="form-control" formControlName="email" placeholder="Enter Email" [ngClass]="{'form-submitted': f.submitted}" />
+                                        <div *ngIf="ui.checkErrors(g.email, f)" class="errors">
+                                            <p *ngIf="g.email.errors.required">Email is required</p>
+                                            <p *ngIf="g.email.errors.maxlength">Email should not exceeds {{ g.email.errors.maxlength.requiredLength }} characters</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Mobile # <span class="mendatory">*</span></label>
+                                        <input type="text" class="form-control" formControlName="contact_1" placeholder="Enter Mobile #" [ngClass]="{'form-submitted': f.submitted}" />
+                                        <div *ngIf="ui.checkErrors(g.contact_1, f)" class="errors">
+                                            <p *ngIf="g.contact_1.errors.required">Mobile # is required</p>
+                                            <p *ngIf="g.contact_1.errors.maxlength">Mobile # should not exceeds {{ g.contact_1.errors.maxlength.requiredLength }} characters</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Home Phone # <span class="mendatory">*</span></label>
+                                        <input type="text" class="form-control" formControlName="contact_2" placeholder="Enter Home Phone #" [ngClass]="{'form-submitted': f.submitted}" />
+                                        <div *ngIf="ui.checkErrors(g.contact_2, f)" class="errors">
+                                            <p *ngIf="g.contact_2.errors.required">Home Phone # is required</p>
+                                            <p *ngIf="g.contact_2.errors.maxlength">Home Phone # should not exceeds {{ g.contact_2.errors.maxlength.requiredLength }} characters</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>WhatsApp # <span class="mendatory">*</span></label>
+                                        <input type="text" class="form-control" formControlName="whatsapp_no" placeholder="Enter WhatsApp #" [ngClass]="{'form-submitted': f.submitted}" />
+                                        <div *ngIf="ui.checkErrors(g.whatsapp_no, f)" class="errors">
+                                            <p *ngIf="g.whatsapp_no.errors.required">WhatsApp # is required</p>
+                                            <p *ngIf="g.whatsapp_no.errors.maxlength">WhatsApp # should not exceeds {{ g.whatsapp_no.errors.maxlength.requiredLength }} characters</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Skype <span class="mendatory">*</span></label>
+                                        <input type="text" class="form-control" formControlName="skype" placeholder="Enter Skype " [ngClass]="{'form-submitted': f.submitted}" />
+                                        <div *ngIf="ui.checkErrors(g.skype, f)" class="errors">
+                                            <p *ngIf="g.skype.errors.required">Skype ID is required</p>
+                                            <p *ngIf="g.skype.errors.maxlength">Skype ID should not exceeds {{ g.skype.errors.maxlength.requiredLength }} characters</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Address</label>
+                                        <input type="text" class="form-control" formControlName="address" placeholder="Enter Address" [ngClass]="{'form-submitted': f.submitted}" />
+                                        <div *ngIf="ui.checkErrors(g.address, f)" class="errors">
+                                            <p *ngIf="g.address.errors.required">Address is required</p>
+                                            <p *ngIf="g.address.errors.maxlength">Address should not exceeds {{ g.address.errors.maxlength.requiredLength }} characters</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Bank Account #</label>
+                                        <input type="text" class="form-control" formControlName="account_no" placeholder="Enter Bank Account #" [ngClass]="{'form-submitted': f.submitted}" />
+                                        <div *ngIf="ui.checkErrors(g.account_no, f)" class="errors">
+                                            <p *ngIf="g.account_no.errors.required">Bank Account # is required</p>
+                                            <p *ngIf="g.account_no.errors.maxlength">Bank Account # should not exceeds {{ g.account_no.errors.maxlength.requiredLength }} characters</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Bank ID</label>
+                                        <select class="form-control" formControlName="bank_id" [ngClass]="{'form-submitted': f.submitted}">
+                                            <option disabled [value]="null">Select Bank</option>
+                                            <option *ngFor="let d of bankList" [value]="d.id">{{d.full_name}}</option>
+                                        </select>
+
+                                        <div *ngIf="ui.checkErrors(g.bank_id, f)" class="errors">
+                                            <p *ngIf="g.bank_id.errors.required">Bank ID is required</p>
+                                            <p *ngIf="g.bank_id.errors.maxlength">Bank ID should not exceeds {{ g.bank_id.errors.maxlength.requiredLength }} characters</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Branch Code</label>
+                                        <input type="text" class="form-control" formControlName="branch_code" placeholder="Enter Bank Code" [ngClass]="{'form-submitted': f.submitted}" />
+                                        <div *ngIf="ui.checkErrors(g.branch_code, f)" class="errors">
+                                            <p *ngIf="g.branch_code.errors.required">Branch Code is required</p>
+                                            <p *ngIf="g.branch_code.errors.maxlength">Branch Code should not exceeds {{ g.branch_code.errors.maxlength.requiredLength }} characters</p>
+                                            <p *ngIf="g.branch_code.errors.minlength">Branch Code should contain minimum {{ g.branch_code.errors.minlength.requiredLength }} characters</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Description <span class="mendatory">*</span></label>
+                                        <textarea rows="5" class="form-control" formControlName="description" placeholder="Enter Description" [ngClass]="{'form-submitted': f.submitted}"></textarea>
+                                        <div *ngIf="ui.checkErrors(g.description, f)" class="errors">
+                                            <p *ngIf="g.description.errors.required">Description is required</p>
+                                            <p *ngIf="g.description.errors.maxlength">Description should not exceeds {{ g.description.errors.maxlength.requiredLength }} characters</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </form>
+                <div class="details-container" *ngIf="!employeeForm">
+                    <img src="/assets/img/loading.gif" style="width: 70px; margin-top: 5%;">
+                </div>
+    </div>
+</div>

@@ -1,0 +1,258 @@
+<app-steps [step]="'project-milestones'"></app-steps>
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-1">
+        <div class="d-flex justify-content-end">
+            <div>
+                <button type="button" class="red sm mb-2" (click)="goToBack()">Back</button>
+                <button type="button" class="blue sm mb-2" (click)="goToNext()">Next</button>
+                <button class="green sm mb-2" (click)="openModalSubject(addMileStoneTemplete, -1)">Add Milestone</button>
+            </div>
+        </div>
+        <div class="card">
+            <h4 class="card-header">Milestones List</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th width="80px">Sr. #</th>
+                                <th width="30%">Milestone</th>
+                                <th>Milestone Amount</th>
+                                <th>Fee</th>
+                                <th>Released Amount</th>
+                                <th>Outstanding Amount</th>
+                                <th>Status</th>
+                                <th class="col-actions">Action</th>
+                            </tr>
+                        </thead>
+                        <ng-container *ngIf="dataStatus == 'fetching'">
+                            <tbody [appSkeletonTabelLoader]="loaderOptions"></tbody>
+                        </ng-container>
+                        <ng-container *ngIf="dataStatus == 'done'">
+                            <tbody *ngIf="projectMileStoneList.length > 0; else noDataFound">
+                                <tr *ngFor="let row of projectMileStoneList; let i = index">
+                                    <td class="text-center">{{i+1}}</td>
+                                    <td>{{ row.title }}</td>
+                                    <td class="text-right">{{ row.amount | mask: 'separator':',' }} {{row.project.currency.short_name}}</td>
+                                    <td class="text-right">{{ row.fee_amount | mask: 'separator':',' }} {{row.project.currency.short_name}}</td>
+                                    <td class="text-right">{{ row.released_amount | mask: 'separator':',' }} {{row.project.currency.short_name}}</td>
+                                    <td class="text-right">{{ row.amount - row.released_amount - row.fee_amount | mask: 'separator':',' }} {{row.project.currency.short_name}}</td>
+                                    <td class="text-center">
+                                        <div [class]="getStatusClass(row.status)">{{ getStatusFormat(row.status) }}</div>
+                                    </td>
+                                    <td *ngIf="row.status == 'funded'">
+                                        <div class="d-flex flex-column justify-content-center">
+                                            <button *ngIf="row.amount - row.released_amount - row.fee_amount > 0" class="green sm mb-2" (click)="openModalProjectPayment(addProjectPaymentTemplete, i)">Release</button>
+                                            <button *ngIf="row.released_amount > 0" class="blue sm mb-2 p-detail" (click)="openModalPaymentDetail(paymentDetailListTemplete, i)">Payment Detail</button>
+                                        </div>
+                                    </td>
+                                    <td *ngIf="row.status != 'funded'">
+                                        <div class=" d-flex justify-content-center">
+                                            <div class="px-2 edit">
+                                                <span>
+                                                    <a><i class="fa fa-edit" (click)="openModalSubject(addMileStoneTemplete,i)"></i></a>
+                                                </span>
+                                            </div>
+                                            <div class="px-2 danger">
+                                                <i class="fa fa-trash" (click)="confirmingModal(deleteTemplate, row.id,i)"></i>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <ng-template #noDataFound>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="8">
+                                            <app-no-data-found></app-no-data-found>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </ng-template>
+                        </ng-container>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #addMileStoneTemplete>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Add Milestone</h4>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="mileStoneForm" #f="ngForm">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label>Title <span class="mendatory">*</span></label>
+                            <input formControlName="title" type="text" class="form-control mt-0" placeholder="Enter Title" [ngClass]="{'form-submitted': f.submitted}">
+                            <div *ngIf="ui.checkErrors(g.title, f)" class="errors">
+                                <p *ngIf="g.title.errors.required">Title is required</p>
+                                <p *ngIf="g.title.errors.maxlength">Title should be 50 Characters</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label>Status <span class="mendatory">*</span></label>
+                            <select formControlName="status" class="fadeIn" class="form-control" [ngClass]="{'form-submitted': f.submitted}">
+                                <option disabled [value]="null">Select Status</option>
+                                <option value="funded">Funded</option>
+                                <option value="not_funded">Not Funded</option>
+                                <option value="released">Released</option>
+                                <option value="partially_released">Partially Released</option>
+                            </select>
+                            <div *ngIf="ui.checkErrors(g.status , f)" class="errors">
+                                <p *ngIf="g.status.errors.required">Status is required</p>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-2">
+                            <div class="form-group">
+                                <label>Amount <span class="mendatory">*</span></label>
+                                <input formControlName="amount" type="text" mask="separator.2" thousandSeparator="," class="form-control mt-0" placeholder="Enter Amount" [ngClass]="{'form-submitted': f.submitted}">
+                                <div *ngIf="ui.checkErrors(g.amount, f)" class="errors">
+                                    <p *ngIf="g.amount.errors.required">Amount is required</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Fee Amount <span class="mendatory">*</span></label>
+                                <input formControlName="fee_amount" type="text" mask="separator.2" thousandSeparator="," class="form-control mt-0" placeholder="Enter Fee Amount" [ngClass]="{'form-submitted': f.submitted}">
+                                <div *ngIf="ui.checkErrors(g.fee_amount, f)" class="errors">
+                                    <p *ngIf="g.fee_amount.errors.required">Released Amount is required</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" appSmartClick (smartClick)="save(f)" class="green sm m-1" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">save
+                <span></span><span></span><span></span>
+            </button>
+            <button type="button" class="red sm ml-1" (click)="cancelButton(f)">Cancel</button>
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #addProjectPaymentTemplete>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Add Project Payment</h4>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="projectPaymentForm" #f="ngForm">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group">
+                                <label>Released Amount USD <span class="mendatory">*</span></label>
+                                <input formControlName="released_amount" type="text" min="0" mask="separator.2" thousandSeparator="," class="form-control mt-0" placeholder="Enter released amount USD" [ngClass]="{'form-submitted': f.submitted}">
+                                <div *ngIf="ui.checkErrors(p.released_amount, f)" class="errors">
+                                    <p *ngIf="p.released_amount.errors.required">Released amount USD is required</p>
+                                    <p *ngIf="p.released_amount.errors.max">Released amount USD can't be exceed from outstanding amount</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Fee Amount USD <span class="mendatory">*</span></label>
+                                <input formControlName="fee_amount" type="text" mask="separator.2" thousandSeparator="," class="form-control mt-0" placeholder="Enter fee amount USD" [ngClass]="{'form-submitted': f.submitted}">
+                                <div *ngIf="ui.checkErrors(p.fee_amount, f)" class="errors">
+                                    <p *ngIf="p.fee_amount.errors.required">Fee amount USD is required</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group">
+                                <label>Conversion Rate <span class="mendatory">*</span></label>
+                                <input formControlName="conversion_rate" type="text" mask="separator.2" thousandSeparator="," min="0" class="form-control mt-0" placeholder="Enter Conversion Rate" [ngClass]="{'form-submitted': f.submitted}">
+                                <div *ngIf="ui.checkErrors(p.conversion_rate, f)" class="errors">
+                                    <p *ngIf="p.conversion_rate.errors.required">Conversion rate is required</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Released Amount PKR <span class="mendatory">*</span></label>
+                                <input formControlName="released_amount_pkr" type="text" mask="separator.2" thousandSeparator="," class="form-control mt-0" placeholder="Enter released amount PKR" [ngClass]="{'form-submitted': f.submitted}">
+                                <div *ngIf="ui.checkErrors(p.released_amount_pkr, f)" class="errors">
+                                    <p *ngIf="p.released_amount_pkr.errors.required">Released amount PKR is required</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" appSmartClick (smartClick)="saveProjectPayment(f)" class="green sm m-1" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Save
+                <span></span><span></span><span></span>
+            </button>
+            <button type="button" class="red sm ml-1" (click)="cancelButton(f)">Cancel</button>
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #paymentDetailListTemplete>
+    <div class="row m-3 no-gutters">
+        <div class="col-md-12 mb-1">
+            <div class="d-flex justify-content-end">
+                <div>
+                    <button type="button" class="sm blue" (click)="modalRef.hide()">Cancel</button>
+                </div>
+            </div>
+            <div class="card">
+                <h4 class="card-header">Payment Detail List</h4>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <!-- <th>Sr #</th> -->
+                                    <th>Released Amount</th>
+                                    <th>Fee Amount</th>
+                                    <th>Exchange Rate</th>
+                                    <th>Released Amount PKR</th>
+                                </tr>
+                            </thead>
+                            <ng-container *ngIf="dataStatusDetail == 'fetching'">
+                                <tbody [appSkeletonTabelLoader]="loaderOptionsPayment"></tbody>
+                            </ng-container>
+                            <ng-container *ngIf="dataStatusDetail == 'done'">
+                                <tbody *ngIf="projectPaymentDetailList.length > 0; else noDataFound">
+                                    <tr *ngFor="let row of projectPaymentDetailList; let i = index">
+                                        <!-- <td class="text-center">{{i+1}}</td> -->
+                                        <td class="text-right">{{ row.released_amount | mask: 'separator':',' }}</td>
+                                        <td class="text-right">{{ row.fee_amount | mask: 'separator':',' }}</td>
+                                        <td class="text-right">{{ row.exchange_rate | mask: 'separator':',' }}</td>
+                                        <td class="text-right">{{ row.released_amount_pkr  | mask: 'separator':',' }}</td>
+                                    </tr>
+                                </tbody>
+                                <ng-template #noDataFound>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="4">
+                                                <app-no-data-found></app-no-data-found>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </ng-template>
+                            </ng-container>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #deleteTemplate>
+    <div class="modal-body text-center">
+        <p>Are you sure to delete?</p>
+        <button type="button" class="sm green" (click)="modalRef.hide()">No</button>
+        <button type="button" class="sm red" (click)="delete()" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Yes
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</ng-template>

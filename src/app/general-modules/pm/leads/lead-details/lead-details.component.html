@@ -1,0 +1,175 @@
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-2" *ngIf="leadDetails">
+        <div class="card">
+            <h4 class="card-header">Project Lead Details</h4>
+            <div class="card-body">
+
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Project Title</th>
+                                <th>Client Name</th>
+                                <th>Budget</th>
+                                <th>Currency</th>
+                                <th width="40%">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{leadDetails.project_title}}</td>
+                                <td>{{leadDetails.client_name}}</td>
+                                <td>{{leadDetails.budget | mask: 'separator':','}}</td>
+                                <td>{{(leadDetails.currency)?leadDetails.currency.full_name:''}}</td>
+                                <td width="40%">{{leadDetails.desc}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="text-right">
+            <button class="green sm mb-2" (click)="openModalFollowUp(addLeadFollowup,-1)">Add New Follow-up</button>
+        </div>
+        <div class="card">
+            <h4 class="card-header">Follo-Up List</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Follow-up Title</th>
+                                <th width="30%">Short Description</th>
+                                <th width="30%">Response</th>
+                                <th>Status</th>
+                                <th>Follow UP Date</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+
+                        <ng-container *ngIf="dataStatus == 'fetching'">
+                            <tbody [appSkeletonTabelLoader]="loaderOptions"></tbody>
+                        </ng-container>
+                        <ng-container *ngIf="dataStatus == 'done'">
+                            <tbody *ngIf="leadDetails.lead_followups.length > 0 && dataStatus == 'done'">
+
+                                <tr *ngFor="let l of leadDetails.lead_followups; let i = index">
+                                    <td>{{l.title}} </td>
+                                    <td>
+                                        <app-read-more [text]="l.description" [maxLength]="50"></app-read-more>
+                                    </td>
+                                    <td>
+                                        <app-read-more [text]="l.response" [maxLength]="50"></app-read-more>
+                                    </td>
+
+                                    <td>
+                                        <div [class]="'status '+getStatusClass(l.status)"><b>{{ getStatusFormat(l.status) }}</b></div>
+                                    </td>
+                                    <td>{{moment(l.followup_date).format('YYYY-MM-DD h:mm:a')}}</td>
+                                    <td class="d-flex justify-content-center align-content-center">
+                                        <div class="px-2">
+                                            <i (click)="openModalFollowUp(addLeadFollowup,i)" style="cursor: pointer;margin-top: 0px;" class="far fa-edit"></i>
+                                        </div>
+                                        <div class="px-2">
+                                            <i (click)="openModalFollowUp(deleteTemplate,i)" style="cursor: pointer;margin-top: 0px;" class="fa fa-trash"></i>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <ng-template #noDataFound>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="6">
+                                            <app-no-data-found></app-no-data-found>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </ng-template>
+                        </ng-container>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #addLeadFollowup>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">{{titleOfModal}}</h4>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="followForm" #u="ngForm">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Title:<span class="mendatory">*</span></label>
+                            <input formControlName="title" class="form-control" type="text" placeholder="Title Here">
+                            <div *ngIf="ui.checkErrors(c.title, u)" class="errors">
+                                <p *ngIf="c.title.errors.required">Please Enter title</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Followup Date:<span class="mendatory">*</span></label>
+                            <input formControlName="followup_date" class="form-control" type="text" bsDatepicker [bsConfig]="{ dateInputFormat: 'MMMM Do YYYY',adaptivePosition: true }">
+                            <div *ngIf="ui.checkErrors(c.followup_date, u)" class="errors">
+                                <p *ngIf="c.followup_date.errors.required">Please Select the follow-up date</p>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Follow-up Sattus:<span class="mendatory">*</span></label>
+                            <select formControlName="status" class="form-control">
+                                <option value="null">Select Status</option>
+
+                                <option *ngFor="let m of followUpStatuses" [value]="m.key">{{m.title}}</option>
+
+                            </select>
+
+                            <div *ngIf="ui.checkErrors(c.status, u)" class="errors">
+                                <p *ngIf="c.status.errors.required">Please Select the follow-up date</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Description:
+                                <!--<span class="mendatory">*</span>--> </label>
+                            <textarea formControlName="description" rows="5" class="form-control mt-0" placeholder="Short description here"></textarea>
+                            <!-- <div *ngIf="ui.checkErrors(c.description, u)" class="errors">
+                                <p *ngIf="c.description.errors.required">Description Required</p>
+                            </div> -->
+                        </div>
+                        <div class="col-md-12 mb-1">
+                            <label class="mb-0">Response: <span class="mendatory">*</span></label>
+                            <textarea formControlName="response" rows="5" class="form-control mt-0" placeholder="Response here"></textarea>
+                            <div *ngIf="ui.checkErrors(c.response, u)" class="errors">
+                                <p *ngIf="c.response.errors.required">Response</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" (click)="save(u);" class="green sm m-1">save</button>
+            <button type="button" class="red sm ml-1" (click)="cancelButton(u)">Cancel</button>
+
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #deleteTemplate>
+    <div class="modal-body">
+        <p>Are you sure that you want to delete?</p>
+        <div class="text-right">
+            <button class="xs black" (click)="cancelButtonNon()">No</button>
+            <button class="xs red" (click)="deleteEntry()">Yes</button>
+        </div>
+    </div>
+</ng-template>

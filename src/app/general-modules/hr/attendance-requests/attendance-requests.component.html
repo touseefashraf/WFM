@@ -1,0 +1,96 @@
+<!-- <p>
+    attendance-requests works!
+</p> -->
+
+<div class="row m-3 no-gutters">
+    <div class="col-md-12 mb-1">
+
+        <div class="card">
+            <h4 class="card-header">Attendance Requests List</h4>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Check In</th>
+                                <th>Check Out</th>
+                                <th>Description</th>
+                                <th>Approval Status</th>
+                                <th *ngIf="api.checkPermission(['approve-attendance-request','delete-attendance-request'])">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="dataStatus == 'done'">
+                            <tr *ngFor="let a of attendanceRrequestsList; let i = index">
+                                <td>{{a.user.first_name+' '+a.user.last_name}} </td>
+                                <td>{{a.checkin}}</td>
+                                <td>{{a.checkout}}</td>
+                                <td>{{a.description}} </td>
+                                <td>
+                                    <div style="width: 100px;text-align: center;" [class]="getStatusClass(a.approval_status)">{{ getStatusFormat(a.approval_status) }}</div>
+                                </td>
+                                <td *ngIf="a.approval_status == 'pending'">
+                                    <div *ngIf="api.checkPermission(['approve-attendance-request','delete-attendance-request'])" class=" d-flex justify-content-center">
+                                        <div class="d-flex">
+                                            <button *ngIf="api.checkPermission('approve-attendance-request')" class="green sm" (click)="approveRequestConfirmation(approveTemplate,a.id,i)">Approve</button>
+                                            <button *ngIf="api.checkPermission('delete-attendance-request')" class="red sm" (click)="rejectRequestConfirmation(rejectTemplate,a.id,i)">Reject</button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td *ngIf="a.approval_status == 'approved' || a.approval_status == 'rejected'">
+                                    <div >
+                                    Request {{a.approval_status|uppercase}}
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <ng-container *ngIf="dataStatus == 'fetching'">
+                            <tbody [appSkeletonTabelLoader]="loaderOptions"></tbody>
+                        </ng-container>
+                        <tbody *ngIf="attendanceRrequestsList.length == 0 && dataStatus == 'done'">
+                            <tr>
+                                <td colspan="6">
+                                    <app-no-data-found></app-no-data-found>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #approveTemplate>
+    <div class="modal-body text-center">
+        <p>Do you want to approve the request?</p>
+        <button type="button" class="sm black" (click)="modalRef.hide()">No</button>
+        <button type="button" class="sm green" (click)="acceptRequest()" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Yes
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #rejectTemplate>
+    <div class="modal-body text-center">
+        <p>Do you want to reject the request?</p>
+        <form [formGroup]="attendanceRrequestsForm" (ngSubmit)="rejectRequest(attendanceRrequestsForm)" #f="ngForm">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Rejection Reason <span class="mendatory">*</span></label>
+                        <input type="text" formControlName="reject_reason" class="form-control" placeholder="Enter a Rejection Reason" [ngClass]="{'form-submitted': f.submitted}">
+                        <div *ngIf="ui.checkErrors(g.reject_reason , f)" class="errors">
+                            <p *ngIf="g.reject_reason.errors.required">Reject Reason is required</p>
+                            <p *ngIf="g.reject_reason.errors.maxlength">Reject Reason should be 500 Characters</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="sm black" (click)="modalRef.hide()">No</button>
+            <button type="submit" class="sm green" [disabled]="loginLoading" [ngClass]="loginLoading?'in-progress':''">Yes
+                <span></span><span></span><span></span>
+            </button>
+        </form>
+    </div>
+</ng-template>
